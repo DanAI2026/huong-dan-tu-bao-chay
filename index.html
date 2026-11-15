@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Hướng dẫn thao tác cơ bản các tủ báo cháy: EST3, NFS2-3030, SPERA Nittan, Horing, Dahua, Tanda, Yunyang.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Tủ báo cháy">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#1d2328">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Hướng dẫn tủ báo cháy</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Một cột hẹp, đọc trên điện thoại tại phòng trực. Trang chủ: danh sách tủ + bảng tra nhanh. Trang tủ: các thẻ việc cần làm. */
+:root{
+  --bg:#eef0f1; --panel:#ffffff; --ink:#1d2328; --muted:#5d6872; --line:#d5dade; --chip:#f3f5f6;
+  --accent:#c8201e; --accent-ink:#ffffff; --accent-soft:#fbe9e8;
+  --warn:#9a5600; --warn-soft:#fff4e0; --ok:#1f7a4a; --ok-soft:#e5f4ec;
+  --led-r:#d8261f; --led-y:#e8a400; --led-g:#21a35a; --led-o:#8a949c;
+  --key:#2a3238; --key-ink:#ffffff;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171a; --panel:#1c2226; --ink:#e9ecee; --muted:#9aa6af; --line:#2d363c; --chip:#242b30;
+  --accent:#ff5a4f; --accent-ink:#1a0505; --accent-soft:#3a1c1b;
+  --warn:#f0a33a; --warn-soft:#33270f; --ok:#4fc487; --ok-soft:#173226;
+  --key:#e9ecee; --key-ink:#13171a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171a; --panel:#1c2226; --ink:#e9ecee; --muted:#9aa6af; --line:#2d363c; --chip:#242b30;
+  --accent:#ff5a4f; --accent-ink:#1a0505; --accent-soft:#3a1c1b;
+  --warn:#f0a33a; --warn-soft:#33270f; --ok:#4fc487; --ok-soft:#173226;
+  --key:#e9ecee; --key-ink:#13171a; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.02;margin:0;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+h2{font-family:var(--f-display);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.04em;margin:0}
+h3{font-size:15px;margin:0;font-weight:700}
+.sub{color:var(--muted);font-size:13px;margin:4px 0 0}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+
+/* Thẻ khẩn: luôn nằm đầu trang chủ */
+.sos{border:2px solid var(--accent);background:var(--accent-soft)}
+.sos ol{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:4px}
+.sos b{color:var(--accent)}
+.call{display:flex;gap:8px;flex-wrap:wrap}
+.call a{flex:1 1 140px;text-align:center;text-decoration:none;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:10px;padding:10px 12px;font-size:16px}
+
+.search{display:flex;gap:8px}
+.search input{flex:1;min-width:0;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit;padding:0 14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:6px 14px;cursor:pointer;font-size:14px;font-weight:500}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.list{display:flex;flex-direction:column;gap:8px}
+.item{appearance:none;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center}
+.item:hover{border-color:var(--muted)}
+.item b{font-family:var(--f-display);font-size:22px;letter-spacing:.02em;text-transform:uppercase;line-height:1.1}
+.item small{color:var(--muted);font-size:13px;grid-column:1}
+.item .tag{grid-row:1/3;grid-column:2}
+.tag{font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;white-space:nowrap}
+.tag.dc{background:var(--ok-soft);color:var(--ok)}
+.tag.th{background:var(--warn-soft);color:var(--warn)}
+.empty{color:var(--muted);text-align:center;padding:14px}
+
+/* Bảng tra nhanh */
+.tw{overflow-x:auto;margin:0 -4px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td:first-child{font-weight:600}
+.quick td{min-width:110px}
+.quick td:first-child{min-width:96px}
+
+/* Trang tủ */
+.top{display:flex;align-items:center;gap:10px}
+.back{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:10px;height:42px;padding:0 14px;cursor:pointer;font-weight:600;flex:none}
+.meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;position:sticky;top:0;z-index:2;background:var(--bg);padding-block:6px;margin-block:-6px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{appearance:none;flex:none;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tab.fire{border-color:var(--accent)}
+
+ol.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+ol.steps>li{counter-increment:s;display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start}
+ol.steps>li::before{content:counter(s);width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--bg);display:grid;place-items:center;font-weight:700;font-size:14px;font-family:var(--f-display);font-size:17px}
+ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+kbd{display:inline-block;font-family:var(--f-display);font-weight:700;font-size:15px;letter-spacing:.03em;background:var(--key);color:var(--key-ink);border-radius:5px;padding:0 7px;line-height:1.5;text-transform:uppercase;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:14px;background:var(--chip);border:1px solid var(--line);border-radius:5px;padding:0 5px;white-space:nowrap}
+.box{border-radius:10px;padding:10px 12px;font-size:14px}
+.box.warn{background:var(--warn-soft);border-left:4px solid var(--warn)}
+.box.stop{background:var(--accent-soft);border-left:4px solid var(--accent)}
+.box.info{background:var(--chip);border-left:4px solid var(--muted)}
+.box b:first-child{display:block;margin-bottom:2px}
+
+.leds{display:flex;flex-direction:column}
+.led{display:grid;grid-template-columns:18px minmax(0,1fr);gap:10px;padding:8px 0;border-bottom:1px solid var(--line);align-items:start}
+.led:last-child{border-bottom:none}
+.led i{width:14px;height:14px;border-radius:50%;margin-top:4px;background:var(--led-o);box-shadow:0 0 0 2px var(--panel),0 0 0 3px var(--line)}
+.led i.r{background:var(--led-r)} .led i.y{background:var(--led-y)} .led i.g{background:var(--led-g)}
+.led p{margin:0}
+.led .nm{font-weight:700}
+.led .cl{color:var(--muted);font-size:13px;font-weight:500}
+
+.keys{display:flex;flex-direction:column}
+.k{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:4px 12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.k:last-child{border-bottom:none}
+.k>div:first-child{max-width:150px}
+.k kbd{white-space:normal}
+.k p{margin:0}
+p.t{margin:0}
+
+footer{color:var(--muted);font-size:12.5px;text-align:center;line-height:1.6}
+footer b{color:var(--ink)}
+.offline{color:var(--muted)} .offline.ok{color:var(--ok)}
+
+.install{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--panel);border:2px solid var(--accent);border-radius:12px;padding:10px 12px;font-size:14px;font-weight:500}
+.install span{min-width:0}
+.install-b{appearance:none;border:none;background:var(--accent);color:var(--accent-ink);font-weight:700;font-size:16px;height:42px;padding:0 22px;border-radius:10px;cursor:pointer;flex:none}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <div class="install" id="install" hidden><span id="install-t">Cài "Tủ báo cháy" lên màn hình chính để mở nhanh và dùng không cần mạng.</span><button class="install-b" id="install-b" type="button">Cài</button></div>
+  <main id="app"></main>
+  <footer>
+    Tóm tắt thao tác cơ bản từ tài liệu hướng dẫn của hãng và nhà cung cấp.<br>
+    Mỗi công trình có thể lập trình khác. Việc lập trình, sửa chữa phải do kỹ thuật viên thực hiện.<br>
+    <b>Công ty TNHH Công Nghệ UTC</b> · Hotline <a href="tel:0931188114">093 11 88 114</a> · pcccutc.com
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ===== Nội dung từng tủ =====
+   Ký hiệu trong chữ: [[Tên nút]] = phím trên tủ; `abc` = mã, mật khẩu, địa chỉ.
+   Khối: steps (các bước), dots (gạch đầu dòng), leds [tên, màu r/y/g/o, chữ màu, ý nghĩa],
+   keys [nút, chức năng], warn/stop/info (hộp lưu ý), table {head, rows}, p (đoạn chữ). */
+var PANELS = [
+{
+  id:'est3', name:'EST3', brand:'Edwards', type:'dc',
+  desc:'Tủ địa chỉ, tối đa 10 loop, nối mạng tối đa 64 tủ. Có thể kèm âm thanh báo động và điện thoại báo cháy.',
+  quick:{panel:'[[Alarm]] (xem và xác nhận)', bell:'[[Alarm Silence]]', reset:'[[Reset]]', pass:'Cấp 1 `1111` · cấp 2 `2222` · cấp 3 `3333` · cấp 4 `4444`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn trên nút [[Alarm]] chớp liên tục, còi tại tủ kêu. Tùy lập trình, chuông và đèn chớp toàn công trình hoạt động.'},
+      {steps:[
+        'Nhấn [[Alarm]] để xem sự kiện cháy trên màn hình. Đèn nút chuyển sang sáng đứng: sự kiện đã được xác nhận.',
+        'Có nhiều sự kiện: dùng [[Previous]] / [[Next Message]] để xem lần lượt. Sự kiện đang tô sáng thì nhấn [[Alarm]] để xác nhận và sang sự kiện kế tiếp.',
+        'Nhấn [[Details]] để biết tủ, card, địa chỉ và tên thiết bị (xem cách đọc ở thẻ "Địa chỉ").',
+        'Cử người đến kiểm tra vị trí có cháy thật hay không.',
+        '<b>Cháy thật:</b> ra lệnh di tản, gọi 114, thực hiện chữa cháy. Nếu trước đó đã nhấn [[Alarm Silence]] thì nhấn lại [[Alarm Silence]] để chuông, đèn chớp kêu trở lại.',
+        '<b>Báo giả:</b> xử lý nguyên nhân rồi nhấn [[Reset]]. Đèn Reset tắt khi hệ thống đã về bình thường.'
+      ]},
+      {warn:'<b>Nút nhấn khẩn bị kích hoạt</b>Dùng chìa mở hộp nút nhấn, đưa về trạng thái bình thường, rồi mới nhấn [[Reset]] tại tủ.'},
+      {p:'[[Alarm Silence]] chỉ tắt chuông, đèn chớp tạm thời (đèn nút sáng vàng). Có được tắt hay không là do quy định an toàn của tòa nhà.'}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {table:{head:['Loại sự kiện','Gồm những gì'], rows:[
+        ['Supervisory','Đầu dò gas, van chữa cháy đang đóng, máy phát đang chạy, máy bơm đang chạy.'],
+        ['Trouble','Lỗi thiết bị, đầu báo khói bẩn 100%.'],
+        ['Monitor','Đầu báo khói bẩn 50-99%.']
+      ]}},
+      {steps:[
+        'Đèn nút tương ứng chớp và còi tủ kêu. Nhấn [[Supvt]], [[Trouble]] hoặc [[Monitor]] để xem và xác nhận (đèn chuyển sáng đứng).',
+        'Dùng [[Previous]] / [[Next Message]] chọn sự kiện, nhấn [[Details]] để xem chi tiết lỗi (hở mạch, chập, chạm đất...).',
+        'Đối chiếu thẻ "Mã lỗi" để biết nguyên nhân. Lỗi không tự xử lý được thì báo đơn vị bảo trì.'
+      ]}
+    ]},
+    {k:'cl', t:'Cô lập thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Thiết bị bị Disable sẽ không báo cháy về tủ. Phải ghi sổ, bố trí người tuần tra khu vực và Enable lại ngay khi xong.'},
+      {steps:[
+        'Vào [[Command Menu]], chọn mục <b>Disable</b> (dùng mũi tên lên xuống rồi [[Enter]], hoặc bấm số rồi [[Enter]]).',
+        'Chọn loại cần cô lập: Device (đầu báo, module, nút nhấn), Card, Group, Time Control, Switch, LED.',
+        'Nhập mật khẩu (cần cấp 2 trở lên; tài liệu ví dụ dùng cấp 3 `3333`).',
+        'Nhập địa chỉ dạng `PPCCDDDD`. Màn hình hiện tên thiết bị đã bị cô lập.',
+        'Khôi phục: vào [[Command Menu]] chọn <b>Enable</b>, làm các bước tương tự.'
+      ]},
+      {p:'Lệnh <b>Activate</b> kích hoạt thiết bị hoặc chức năng (cần cấp 2 trở lên); dùng <b>Restore</b> để trả về như cũ.'}
+    ]},
+    {k:'dc', t:'Địa chỉ', b:[
+      {p:'Xem chi tiết sự kiện bằng [[Details]]. Ví dụ hiển thị <code>P:01 C:02 D:0129</code>:'},
+      {table:{head:['Ký hiệu','Ý nghĩa'], rows:[['P','Số tủ (Panel/Cabinet)'],['C','Số card loop (LRM)'],['D','Địa chỉ thiết bị']]}},
+      {p:'Khi nhập địa chỉ trong menu: `PPCCDDDD`, ví dụ tủ 01, card 02, thiết bị 0129 là <code>01020129</code>.'}
+    ]},
+    {k:'ma', t:'Mã lỗi', b:[
+      {table:{head:['Lỗi','Nguyên nhân','Cách xử lý'], rows:[
+        ['DIRTY 80% (Monitor)','Đầu báo khói bẩn 50-99%.','Lên kế hoạch vệ sinh đầu báo.'],
+        ['DIRTY HEAD ACT (Trouble)','Đầu báo khói bẩn 100%.','Vệ sinh hoặc thay đầu báo.'],
+        ['Com Fault','Mất liên lạc thiết bị: đầu báo tiếp xúc kém với đế, hoặc thiết bị hỏng.','Gắn lại đầu báo vào đế, hoặc thay thiết bị.'],
+        ['Open Fault','Hở mạch, mất điện trở giám sát ở module.','Kiểm tra điện trở cuối 47 kΩ.'],
+        ['Short Fault','Chập mạch, hai chân điện trở chạm nhau.','Kiểm tra lại điện trở 47 kΩ.']
+      ]}}
+    ]},
+    {k:'them', t:'Menu khác', b:[
+      {table:{head:['Mục','Dùng để','Mật khẩu'], rows:[
+        ['Status','Xem điểm đang kích hoạt, báo cháy, lỗi, giám sát, điểm bị cô lập.','Không cần'],
+        ['Reports > Device Maintenance','Xem % bụi bẩn (Dirty), độ nhạy (Sen) của đầu báo.','Không cần'],
+        ['Reports > History','Xem lịch sử sự kiện.','Không cần'],
+        ['Program > Change Time / Date','Chỉnh giờ, ngày.','Cấp 3'],
+        ['Program > Restart','Khởi động lại từng tủ hoặc tất cả.','Cấp 4'],
+        ['Program > Clear History','Xóa lịch sử.','Cấp 4'],
+        ['Test','Start/Cancel Test, Lamp Test (thử đèn), thử từng thiết bị.','Cấp 4']
+      ]}},
+      {h:'Điện thoại báo cháy (nếu có)'},
+      {keys:[
+        ['Connect','Nhận cuộc gọi đang chờ từ máy con.'],
+        ['ACK','Tắt tiếng chuông báo cuộc gọi.'],
+        ['Disconnect','Ngắt cuộc gọi đang tô sáng.'],
+        ['Review Pending','Xem lần lượt các cuộc gọi đang chờ.'],
+        ['Review Connected','Xem các cuộc gọi đã kết nối.']
+      ]},
+      {p:'Tối đa 5 máy con nói chuyện cùng lúc mà không giảm chất lượng.'}
+    ]}
+  ]
+},
+{
+  id:'nfs2-3030', name:'NFS2-3030', brand:'Notifier', type:'dc',
+  desc:'Tủ địa chỉ thông minh, màn hình 16 dòng, bàn phím chữ số, 10 phím mềm.',
+  quick:{panel:'[[Acknowledge]]', bell:'[[Signal Silence]]', reset:'[[System Reset]]', pass:'`11111111` (8 số 1)'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Còi tủ kêu liên tục, đèn FIRE ALARM chớp, màn hình góc trái hiện FIRE ALARM kèm tên và địa chỉ thiết bị. Chuông, còi, đèn ngoài hoạt động.'},
+      {steps:[
+        'Nhấn [[Acknowledge]] để tắt còi tại tủ. Đèn FIRE ALARM chuyển từ chớp sang sáng đứng.',
+        'Nhấn phím mềm [[More Information]] để xem vị trí, loại thiết bị và cách xử lý (nếu đã được lập trình).',
+        'Cử người kiểm tra vị trí. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Khi được phép tắt chuông còi ngoài: nhấn [[Signal Silence]] (đèn Signals Silenced sáng).',
+        'Xử lý xong nguyên nhân thì nhấn [[System Reset]]. Màn hình về "SYSTEM NORMAL" là đạt.'
+      ]},
+      {p:'Muốn cho chuông còi kêu lại: giữ [[Drill]] 2 giây.'},
+      {warn:'<b>Reset xong vẫn báo lại</b>Nguyên nhân chưa hết (còn khói, nút nhấn chưa phục hồi). Xử lý tiếp rồi mới reset.'}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {info:'<b>Nhận biết</b>Còi tủ kêu bíp bíp, đèn SYSTEM TROUBLE chớp, màn hình hiện TROUBLE kèm thiết bị lỗi.'},
+      {steps:[
+        'Nhấn [[Acknowledge]] để tắt còi. Đèn SYSTEM TROUBLE chuyển sang sáng đứng.',
+        'Nhấn [[More Information]] để xem vị trí, thiết bị lỗi.',
+        'Xử lý nguyên nhân rồi nhấn [[System Reset]].',
+        'Lỗi không tự xử lý được: báo đơn vị bảo trì.'
+      ]},
+      {p:'Xem lại lịch sử: phím mềm [[Main Menu]] → <b>History Display</b> → <b>Local History</b> (tủ đang đứng), hoặc đổi số sau chữ N để xem tủ khác trong mạng.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Power','g','Xanh','Có điện lưới, làm việc bình thường.'],
+        ['Fire Alarm','r','Đỏ','Có báo cháy. Chớp khi chưa xác nhận.'],
+        ['Pre-Alarm','r','Đỏ','Tiền báo cháy. Chớp khi chưa xác nhận.'],
+        ['Security','g','Xanh','Tín hiệu an ninh.'],
+        ['Supervisory','y','Vàng','Tín hiệu giám sát (van, bơm...).'],
+        ['System Trouble','y','Vàng','Lỗi hệ thống.'],
+        ['Other Event','y','Vàng','Sự kiện khác.'],
+        ['Signals Silenced','y','Vàng','Sáng: đã tắt chuông còi. Chớp: một số ngõ ra bị tắt.'],
+        ['Point Disable','y','Vàng','Có thiết bị bị cô lập. Chớp khi chưa xác nhận.']
+      ]}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Acknowledge','Xác nhận sự kiện, tắt còi tại tủ.'],
+        ['Signal Silence','Tắt các ngõ ra chuông, còi, đèn.'],
+        ['Drill (giữ 2 giây)','Kích hoạt lại chuông, còi, đèn.'],
+        ['System Reset','Khởi động lại, xóa các tín hiệu đang báo. Nếu nguyên nhân còn, tủ báo lại.'],
+        ['Fire Alarm / Security / Supervisory / Trouble / Other Event Scroll','Xem lần lượt sự kiện theo từng nhóm.'],
+        ['Phím mềm','10 phím cạnh màn hình, chọn lệnh theo chữ hiện trên màn hình.']
+      ]}
+    ]},
+    {k:'cl', t:'Cô lập thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Chỉ cô lập khi vệ sinh, sửa chữa khu vực. Thiết bị bị Disable không báo cháy. Ghi sổ và Enable lại ngay khi xong.'},
+      {steps:[
+        'Chọn phím mềm [[Program / Alter Status]].',
+        'Nhập mật khẩu `11111111` (8 số 1).',
+        'Vào <b>Alter Status</b>, chọn mục Disable/Enable.',
+        'Bấm 1 để đổi loại thiết bị (Detector hoặc Module). Nhập địa chỉ dạng <code>NxxxLyyDzzz</code> rồi [[Accept]].',
+        'Thiết bị đang chạy thì màn hình hiện DISABLE, đang bị cô lập thì hiện ENABLE. Chọn theo yêu cầu.'
+      ]},
+      {p:'Ví dụ: đầu báo địa chỉ 001, loop 01, tủ số 2 là <code>N002L01D001</code>.'}
+    ]}
+  ]
+},
+{
+  id:'spera', name:'SPERA', brand:'Nittan', type:'dc',
+  desc:'Tủ địa chỉ NK-7000FAC, có thể nối mạng nhiều tủ (node).',
+  quick:{panel:'[[Signal Silence]]', bell:'[[Signal Silence]]', reset:'[[System Reset]]', pass:'Cấp 1 `1111`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Tủ kêu, đèn Alarm Queue sáng, màn hình hiện thiết bị báo cháy. Chuông và các ngõ ra được kích hoạt, chỉ tắt khi Reset.'},
+      {steps:[
+        'Nhấn [[Signal Silence]] để ngắt chuông.',
+        'Nhấn [[Alarm Queue]] để xem vùng, thiết bị đang báo cháy. Nhấn [[?]] (Info) để xem thêm.',
+        'Đọc địa chỉ dạng <code>N-C-L-D</code> (xem thẻ "Địa chỉ"), cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Xử lý xong nguyên nhân thì nhấn [[System Reset]]. Màn hình về "System Normal" là đạt.'
+      ]}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {info:'<b>Nhận biết</b>Còi kêu, đèn Trouble Queue sáng. Lỗi do mất nguồn AC, mất ắc quy, mất thiết bị, đứt hoặc chạm dây.'},
+      {steps:[
+        'Nhấn [[Trouble Queue]] để xem lỗi, nhấn [[?]] để xem thêm.',
+        'Đối chiếu thẻ "Mã lỗi". Tủ chỉ về bình thường khi lỗi đã được xử lý.'
+      ]},
+      {p:'Thử đèn: [[Visual Indicator Test]]. Thử báo cháy: [[Fire Drill]] (sẽ kích hoạt chuông, phải báo trước).'}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['System Normal','o','Màn hình','Hệ thống bình thường.'],
+        ['AC Power','g','Xanh','Có điện lưới 220V.'],
+        ['CPU Fault','y','Vàng','CPU chính bị lỗi.'],
+        ['Ground Fault','y','Vàng','Có dây dẫn bị chạm đất.'],
+        ['Alarm Queue','r','Đỏ','Đang báo cháy. Chỉ tắt khi Reset và hết tín hiệu cháy.'],
+        ['Supervisor Queue','y','Vàng','Tín hiệu giám sát (công tắc dòng chảy, module giám sát).'],
+        ['Trouble Queue','y','Vàng','Có lỗi.'],
+        ['Monitor Queue','y','Vàng','Tín hiệu theo dõi.']
+      ]},
+      {keys:[
+        ['Menu','Mở menu lệnh.'],
+        ['Cancel','Hủy lệnh, quay lại.'],
+        ['? (Info)','Nhấn giữ để xem thêm thông tin.'],
+        ['Signal Silence','Ngắt tiếng chuông.'],
+        ['System Reset','Khởi động lại sau sự cố.'],
+        ['Visual Indicator Test','Thử đèn chỉ thị.'],
+        ['Fire Drill','Kích hoạt báo cháy để thử.']
+      ]}
+    ]},
+    {k:'cl', t:'Cô lập (Bypass)', b:[
+      {stop:'<b>Rủi ro cao</b>Thiết bị bị bypass không báo cháy. Ghi sổ, bố trí tuần tra, unbypass ngay khi xong.'},
+      {steps:[
+        'Nhấn [[Menu]], dùng mũi tên và [[Enter]] chọn mục <b>2. Bypass</b>.',
+        'Chọn loại: Device/Circuit (thiết bị, mạch), Node (tủ trong mạng), Relay Disc (rơ le), Input Zone (vùng ngõ vào), Node Output (ngõ ra).',
+        'Nhập mật khẩu cấp 1, mặc định `1111`.',
+        'Chọn node, card, loop rồi chọn thiết bị.',
+        'Xác nhận <b>Bypass</b> (cô lập) hoặc <b>Unbypass</b> (bỏ cô lập). Nhấn [[Cancel]] nhiều lần để thoát.'
+      ]},
+      {warn:'<b>Lưu ý</b>Nhấn Reset không bỏ được bypass. Chỉ lệnh Network Restart mới đưa toàn bộ về ban đầu.'},
+      {h:'Khởi động lại toàn hệ thống'},
+      {steps:['Nhấn [[Menu]], chọn <b>Network Restart</b>.','Dùng mũi tên và [[Enter]] chọn <b>Y</b> để xác nhận.']}
+    ]},
+    {k:'dc', t:'Địa chỉ', b:[
+      {p:'Địa chỉ hiện dạng <code>N*-C*-L*-D*</code>: N = tủ (node), C = card loop, L = loop trong card, D = địa chỉ thiết bị.'},
+      {p:'Ví dụ <code>N1-C2-L1-D22</code>: tủ 1, card 2, loop 1 của card 2, địa chỉ 22 (tức loop 3 của tủ 1).'},
+      {table:{head:['Thiết bị','Phần đuôi địa chỉ'], rows:[
+        ['Đầu khói PY, nhiệt H2/H2-H, đế còi S6B, module MiniIP','<code>.1</code> (1 địa chỉ)'],
+        ['Đầu khói nhiệt DPH, PYH','<code>.1</code> phần khói · <code>.2</code> phần nhiệt'],
+        ['Module 2 ngõ vào DIP','<code>.1</code> ngõ vào 1 · <code>.2</code> ngõ vào 2 · <code>.4</code> cách ly'],
+        ['Module 2 ngõ ra DOP, DOP-240','<code>.1</code> ngõ ra 1 · <code>.2</code> ngõ ra 2 · <code>.4</code> cách ly'],
+        ['Module chuông SCM','<code>.1</code> nguồn 24VDC · <code>.2</code> đường chuông · <code>.4</code> cách ly']
+      ]}}
+    ]},
+    {k:'ma', t:'Mã lỗi', b:[
+      {table:{head:['Mã trên màn hình','Ý nghĩa'], rows:[
+        ['Open circuit trouble','Hở mạch (đứt dây).'],
+        ['Short circuit trouble','Ngắn mạch (chạm dây).'],
+        ['Battery Trouble','Lỗi ắc quy.'],
+        ['Ground Fault','Chạm đất.'],
+        ['Unconfigured Device (N-C-L-D)','Thiết bị đã lắp nhưng chưa được lập trình.'],
+        ['Wrong Device Type','Lắp sai loại thiết bị.'],
+        ['Unconfigured CPU Trouble','Màn hình phụ hoặc card loop thêm vào chưa lập trình, hoặc sai địa chỉ.'],
+        ['I/O Adder Mismatch','Thiết bị I/O thêm vào sai thứ tự hoặc sai số lượng.'],
+        ['Display Mismatch','Số module hiển thị (NK-TZDS-48A, NK-FDX-8, NK-IPS-24) không khớp lập trình.'],
+        ['Slave Configuration Address Mismatch','Sai địa chỉ màn hình phụ.'],
+        ['Data Link Trouble','Mất kết nối màn hình phụ.'],
+        ['Card not supported','Phần mềm màn hình phụ không hợp với tủ NK-7000FAC.'],
+        ['Printer trouble','Ra lệnh in khi chưa nối máy in. Nhấn System Reset để xóa.'],
+        ['Configuration Data Error','Hệ thống quá tải. Báo kỹ thuật nạp lại chương trình hoặc tắt mở nguồn.']
+      ]}},
+      {p:'Các lỗi lập trình (Unconfigured, Mismatch, Configuration) cần kỹ thuật viên có phần mềm của hãng.'}
+    ]}
+  ]
+},
+{
+  id:'horing-qa16', name:'Horing QA16', brand:'Horing Lih', type:'dc',
+  desc:'Tủ địa chỉ, có màn hình LCD, 3 ngõ ra rơ le trên tủ.',
+  quick:{panel:'[[Mute]]', bell:'[[Bell]]', reset:'[[Reset]] (khoảng 30 giây)', pass:'`1111`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn FIRE chớp, còi tủ kêu liên tục. Đèn MANUAL CALL POINT sáng nếu do nút nhấn khẩn.'},
+      {steps:[
+        'Nhấn [[Mute]] một lần để tắt còi tại tủ (còi sẽ kêu lại nếu có cháy hoặc lỗi mới).',
+        'Đọc địa chỉ thiết bị trên màn hình, hoặc nhấn [[Review]] để xem lại sự kiện. Cử người kiểm tra.',
+        'Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Khi được phép tắt chuông ngoài: nhấn [[Bell]]. Nhấn [[Bell]] lần nữa để chuông kêu lại.',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]]. Tủ thiết lập lại trong khoảng 30 giây.'
+      ]},
+      {info:'<b>Cách đọc tiếng còi tủ</b>Kêu liên tục: báo cháy · 6 giây kêu 1 lần: lỗi · 2 giây kêu 1 lần: mất kết nối thiết bị · 3 tiếng ngắn mỗi 5 giây: thiết bị giám sát kích hoạt.'},
+      {warn:'<b>Không giữ nút Mute 3 giây</b>Giữ 3 giây là tắt còi vĩnh viễn (đèn chớp), tủ sẽ im khi có cháy mới. Nếu lỡ giữ, nhấn [[Mute]] thêm một lần để bỏ.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['AC Power','g','Sáng khi bình thường','Có điện lưới 220V (trong khoảng ±15%).'],
+        ['Standby Power','y','Sáng khi bất thường','Mất điện lưới, tủ đang chạy ắc quy.'],
+        ['Manual Call Point','r','Sáng khi bất thường','Báo cháy do nút nhấn khẩn địa chỉ.'],
+        ['Fault','y','Sáng khi bất thường','Lỗi: thiếu điện trở cuối tuyến, chập loop, mất nguồn AC/DC, mất thiết bị, cầu chì, trùng địa chỉ. Chi tiết xem trên màn hình.'],
+        ['Test','y','Sáng khi bất thường','Có thiết bị đang bị cách ly, mất kết nối hoặc đang thử.'],
+        ['High Voltage','y','Sáng khi bất thường','Điện áp vào quá cao (trên 253V).'],
+        ['Low Voltage','y','Sáng khi bất thường','Điện áp vào quá thấp (dưới 187V).'],
+        ['Fire','r','Chớp','Có báo cháy hoặc đang thử báo cháy.'],
+        ['Phone','y','Sáng khi bất thường','Có điện thoại kết nối vào tủ.']
+      ]}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Reset','Xóa toàn bộ trạng thái hiện tại kể cả báo cháy, thiết lập lại trong khoảng 30 giây.'],
+        ['Battery Test','Thử ắc quy dự phòng. Đèn sáng trong lúc thử.'],
+        ['Alarm Delay','Bật, tắt thời gian trễ báo cháy để giảm báo giả do nhiễu.'],
+        ['Mute','Nhấn 1 lần: tắt còi tạm thời. Giữ 3 giây: tắt vĩnh viễn (không nên dùng).'],
+        ['Bell','Ngắt chuông ngoài; nhấn lại để chuông kêu lại.'],
+        ['Relay O/P 1, 2, 3','Điều khiển 3 ngõ ra rơ le trên tủ.'],
+        ['Review','Xem lại các sự kiện vừa xảy ra.']
+      ]}
+    ]},
+    {k:'cl', t:'Cách ly thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Thiết bị bị cách ly không báo cháy. Ghi sổ, bố trí tuần tra, bỏ cách ly ngay khi xong.'},
+      {steps:[
+        'Nhấn [[Menu]], nhập mật khẩu `1111`.',
+        'Nhấn [[Enter]] để bỏ qua bước đổi mật khẩu.',
+        'Chọn <b>(A) Status Test</b>, chọn thiết bị cần cách ly theo màn hình, nhấn [[Enter]] để hoàn thành.',
+        'Đèn TEST sáng: đang có thiết bị bị cách ly.'
+      ]},
+      {p:'Xem thiết bị nào đang bị cách ly: vào <b>(B) Status Review</b>, chọn <b>Disable</b>.'},
+      {info:'<b>Chưa đủ chi tiết</b>Tài liệu gốc chỉ có hình cho bước chọn thiết bị. Làm theo chữ hiện trên màn hình tủ.'},
+      {p:'Cần tra vị trí gạt công tắc DIP khi cài địa chỉ thiết bị Horing: <a href="https://danai2026.github.io/cai-dia-chi-dip/" target="_blank" rel="noopener">mở công cụ Cài địa chỉ DIP</a>.'}
+    ]}
+  ]
+},
+{
+  id:'dahua-hy-c102', name:'Dahua HY-C102', brand:'Dahua', type:'th',
+  desc:'Tủ thường 6 zone (dòng HY-C102). Phải vào quyền vận hành mới reset được.',
+  quick:{panel:'[[Panel Buzzer Silence]]', bell:'[[Remote Sounder Silence]]', reset:'Vào quyền cấp 2 rồi [[Reset]]', pass:'Cấp 2: [[Accumulate]] + [[Panel Buzzer Silence]]'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn FIRE tổng và đèn Fire ở zone 1-6 sáng đỏ. Còi tủ và chuông ngoài có thể hoạt động.'},
+      {steps:[
+        'Báo lực lượng PCCC cơ sở, người phụ trách, thực hiện phương án thoát nạn. Gọi 114 nếu cháy không kiểm soát được.',
+        'Đọc số zone có đèn Fire, đối chiếu bảng phân vùng dán cạnh tủ, cử người kiểm tra. Không đi một mình vào khu vực có khói.',
+        'Cần liên lạc thì nhấn [[Panel Buzzer Silence]] để tắt còi trong tủ (không xóa sự kiện cháy).',
+        'Không nhấn [[Remote Sounder Silence]] khi người trong khu vực chưa nhận được cảnh báo và chưa có lệnh của người phụ trách.',
+        'Xử lý nguyên nhân: dập lửa, làm sạch khói ở đầu báo, đưa nút nhấn khẩn về bình thường.',
+        'Vào quyền cấp 2 (thẻ "Quyền và reset") rồi nhấn [[Reset]]. Đèn Fire sáng lại thì dừng, kiểm tra tiếp.'
+      ]},
+      {warn:'<b>Không reset được</b>Còn khói hoặc nhiệt, nút nhấn khẩn chưa phục hồi, dây zone chập. Không nhấn Reset liên tục.'}
+    ]},
+    {k:'qr', t:'Quyền và reset', b:[
+      {h:'Cấp 2: người trực được giao quyền'},
+      {steps:[
+        'Nhấn đồng thời [[Accumulate]] và [[Panel Buzzer Silence]].',
+        'Đèn Accumulate sáng đứng là đã vào quyền. Quyền tự hết sau khoảng 5 phút không thao tác.',
+        'Khi nguyên nhân đã xử lý xong, nhấn [[Reset]] một lần, quan sát tủ về bình thường.'
+      ]},
+      {h:'Cấp 3: chỉ kỹ thuật viên, đơn vị bảo trì'},
+      {p:'Nhấn đồng thời [[Admin Control]] và [[Panel Buzzer Silence]]. Đèn Admin Control sáng đứng là được. Không dùng cấp 3 để đổi cấu hình khi không có kế hoạch và người giám sát.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Zone n - Fire','r','Đỏ','Có cháy ở zone đó. Làm ngay quy trình "Khi có cháy".'],
+        ['Zone n - Fault','y','Vàng','Lỗi đường dây zone hoặc đầu báo.'],
+        ['Zone n - Disable','y','Vàng','Zone đang bị cô lập, có thể không báo cháy về tủ.'],
+        ['FIRE','r','Đỏ','Tủ đang có báo cháy.'],
+        ['General Fault','y','Vàng','Có ít nhất một lỗi. Xem các đèn lỗi chi tiết.'],
+        ['General Disable','y','Vàng','Có zone hoặc chức năng đang bị vô hiệu.'],
+        ['Mains Supply','g','Xanh','Có điện lưới.'],
+        ['Battery','g','Xanh','Tủ đang chạy ắc quy dự phòng.'],
+        ['Mains Fault','y','Vàng','Mất hoặc lỗi điện lưới. Kiểm tra aptomat cấp cho tủ.'],
+        ['Battery Fault / Low-Battery','y','Vàng','Ắc quy lỗi, đấu nối kém hoặc yếu.'],
+        ['Sounder Active','o','Trạng thái','Chuông, còi đang kêu.'],
+        ['Sounder Fault','y','Vàng','Lỗi mạch chuông. Xử lý sớm vì có thể không phát cảnh báo.'],
+        ['Panel Buzzer Silence','y','Vàng','Còi trong tủ đã được tắt.'],
+        ['Communication / System Fault / Debug','o','Trạng thái','Lỗi truyền thông, lỗi hệ thống hoặc đang ở chế độ kỹ thuật. Báo bảo trì.']
+      ]}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Panel Buzzer Silence','Tắt còi trong tủ. Không xóa báo cháy, không tắt chuông ngoài.'],
+        ['Remote Sounder Silence','Tắt chuông ngoài. Chỉ dùng theo lệnh người phụ trách.'],
+        ['Reset','Đưa tủ về giám sát sau khi đã xử lý nguyên nhân. Cần quyền cấp 2 hoặc 3.'],
+        ['Zone Disable','Cô lập zone. Chỉ dùng khi bảo trì có kiểm soát.'],
+        ['Alarm Test / Disconnection Test','Chức năng thử của kỹ thuật. Không dùng khi vận hành hằng ngày.'],
+        ['Accumulate / Admin Control','Nhấn cùng Panel Buzzer Silence để vào quyền cấp 2 / cấp 3.']
+      ]}
+    ]},
+    {k:'loi', t:'Lỗi và cô lập', b:[
+      {steps:[
+        'Chụp ảnh mặt tủ, ghi giờ, các đèn đang sáng và zone liên quan.',
+        'Xác định nhóm lỗi: Mains Fault, Battery, Sounder, System, Communication hoặc Fault ở từng zone.',
+        'Người trực chỉ kiểm tra nguồn cấp, aptomat và quan sát bên ngoài. Không mở tủ, tháo dây, thay cầu chì.',
+        'Lỗi không hết: báo đơn vị bảo trì, tăng cường tuần tra khu vực bị ảnh hưởng.'
+      ]},
+      {warn:'<b>Mains Fault và Battery cùng sáng</b>Tủ mất điện lưới, đang chạy ắc quy. Kiểm tra aptomat ngay. Ắc quy cạn thì tủ mất khả năng báo cháy.'},
+      {h:'Cô lập zone (chỉ khi bảo trì)'},
+      {dots:[
+        'Trước khi cô lập: xác định đúng zone, báo các bên liên quan, bố trí tuần tra.',
+        'Trong lúc cô lập: treo biển tại tủ, ghi giờ bắt đầu, lý do, người thực hiện.',
+        'Xong việc: bỏ cô lập, kiểm tra đèn General Disable và Zone Disable đã tắt.'
+      ]}
+    ]}
+  ]
+},
+{
+  id:'tanda', name:'Tanda 8-16 kênh', brand:'Tanda', type:'th',
+  desc:'Tủ thường 8 hoặc 16 zone. Phải cắm và vặn chìa khóa mới bấm được phím.',
+  quick:{panel:'[[Mute Buzzer]]', bell:'[[Silence Alarm]]', reset:'[[Reset]]', pass:'Chìa khóa Control Access'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Bình thường</b>Chỉ có đèn POWER ON sáng xanh, còi và chuông không kêu.'},
+      {info:'<b>Nhận biết cháy</b>Đèn FIRE chớp đỏ, đèn zone báo khu vực sáng đỏ, còi tủ kêu, chuông hoặc còi đèn ngoài hoạt động.'},
+      {steps:[
+        'Đọc số zone đang sáng đỏ, cử người kiểm tra khu vực. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Cắm chìa vào ổ <b>Control Access Key Switch</b>, vặn sang phải (biểu tượng khóa mở).',
+        'Nhấn [[Mute Buzzer]] để tắt còi tại tủ.',
+        'Khi được phép: nhấn [[Silence Alarm]] để tắt chuông hệ thống.',
+        'Xử lý xong sự cố thì nhấn [[Reset]] để khôi phục. Vặn chìa về vị trí khóa và rút ra.'
+      ]},
+      {p:'Khi hệ thống có lỗi: báo người có trách nhiệm hoặc đơn vị bảo trì để khắc phục.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Zone 1-8 / 9-16','r','Đỏ / vàng','Mỗi zone có đèn báo cháy, đèn lỗi và đèn vô hiệu hóa.'],
+        ['Power On','g','Xanh','Có điện lưới 220V.'],
+        ['Mains Fault','y','Vàng','Lỗi điện lưới.'],
+        ['System Fault','y','Vàng','Lỗi hệ thống.'],
+        ['Battery Fault','y','Vàng','Lỗi ắc quy.'],
+        ['Disable','y','Vàng','Có zone hoặc ngõ ra đang bị vô hiệu hóa.'],
+        ['Earth Fault','y','Vàng','Chạm đất.'],
+        ['Test Mode','y','Vàng','Đang thử hệ thống.'],
+        ['Sounder 1 / 2 FLT/DIS','y','Vàng','Mạch chuông 1 hoặc 2 bị lỗi hoặc bị vô hiệu.'],
+        ['Fire Output Sent','r','Đỏ','Đã kích hoạt ngõ ra báo cháy.'],
+        ['Fire-Line FLT/DIS','y','Vàng','Chớp: đường chuông còi chập hoặc đứt. Sáng đứng: bị vô hiệu.']
+      ]}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Khóa Control Access','Vặn sang phải để mở các phím chức năng.'],
+        ['Mute Buzzer','Tắt còi tại tủ.'],
+        ['Silence Alarm','Tắt chuông, còi báo cháy.'],
+        ['Phím kích hoạt chuông (Sound Alarm)','Cho chuông, còi kêu.'],
+        ['Delay','Bật chức năng báo trễ.'],
+        ['Reset','Khôi phục hệ thống sau khi xử lý xong.']
+      ]},
+      {info:'<b>Tên phím</b>Tài liệu gốc chỉ có hình biểu tượng cho một số phím. Đối chiếu nhãn in trên tủ thực tế.'}
+    ]}
+  ]
+},
+{
+  id:'yunyang-yf3', name:'Yunyang YF-3', brand:'Yunyang', type:'th',
+  desc:'Tủ thường dòng YF, báo theo zone.',
+  quick:{panel:'[[Panel Mute]]', bell:'[[Bell Mute]]', reset:'[[Reset]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn FIRE sáng đỏ và đèn của zone tương ứng sáng. Chuông trên bo mạch và chuông ngoài kêu.'},
+      {steps:[
+        'Đọc số zone đang sáng, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Nhấn [[Panel Mute]] để tắt chuông trên tủ.',
+        'Khi được phép: nhấn [[Bell Mute]] để tắt chuông ngoài.',
+        'Muốn ngừng các rơ le tác động ra ngoài: nhấn [[Relay Disable]].',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]].'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Phải xử lý thiết bị trước rồi mới Reset.'}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['Fire','r','Đỏ','Có cháy.'],
+        ['Power','g','Xanh','Nguồn cấp ổn định.'],
+        ['AC Power Fault','y','Vàng','Lỗi nguồn cấp.'],
+        ['Open Circuit','y','Vàng','Lỗi đường dây zone.'],
+        ['Sounder Open Circuit','y','Vàng','Đứt dây chuông.'],
+        ['Sounder Short Circuit','y','Vàng','Chập dây chuông.']
+      ]},
+      {keys:[
+        ['Reset','Khôi phục hệ thống.'],
+        ['Signal Hold Disable','Tự reset hệ thống và tắt chức năng chống báo giả.'],
+        ['Panel Mute','Tắt chuông trên tủ.'],
+        ['Bell Mute','Tắt chuông ngoài.'],
+        ['Relay Disable','Tắt rơ le tác động ra ngoài.']
+      ]}
+    ]}
+  ]
+}
+];
+
+/* ===== Hiển thị ===== */
+var app = document.getElementById('app');
+function esc(s){return String(s).replace(/&(?!#?\w+;)/g,'&amp;')}
+function fmt(s){
+  return esc(s)
+    .replace(/\[\[(.+?)\]\]/g,'<kbd>$1</kbd>')
+    .replace(/`([^`]+)`/g,'<code>$1</code>');
+}
+function plain(s){return String(s).replace(/<[^>]+>/g,' ').replace(/\[\[|\]\]|`/g,'')}
+function tag(p){return p.type==='dc'?'<span class="tag dc">Địa chỉ</span>':'<span class="tag th">Thường</span>'}
+
+function block(b){
+  if(b.steps) return '<ol class="steps">'+b.steps.map(function(s){return '<li><div>'+fmt(s)+'</div></li>'}).join('')+'</ol>';
+  if(b.dots) return '<ul class="dots">'+b.dots.map(function(s){return '<li>'+fmt(s)+'</li>'}).join('')+'</ul>';
+  if(b.warn) return '<div class="box warn">'+fmt(b.warn)+'</div>';
+  if(b.stop) return '<div class="box stop">'+fmt(b.stop)+'</div>';
+  if(b.info) return '<div class="box info">'+fmt(b.info)+'</div>';
+  if(b.p) return '<p class="t">'+fmt(b.p)+'</p>';
+  if(b.h) return '<h3>'+fmt(b.h)+'</h3>';
+  if(b.leds) return '<div class="leds">'+b.leds.map(function(l){
+    return '<div class="led"><i class="'+l[1]+'"></i><p><span class="nm">'+fmt(l[0])+'</span> <span class="cl">· '+fmt(l[2])+'</span><br>'+fmt(l[3])+'</p></div>'}).join('')+'</div>';
+  if(b.keys) return '<div class="keys">'+b.keys.map(function(k){
+    return '<div class="k"><div><kbd>'+fmt(k[0])+'</kbd></div><p>'+fmt(k[1])+'</p></div>'}).join('')+'</div>';
+  if(b.table) return '<div class="tw"><table><thead><tr>'+b.table.head.map(function(h){return '<th>'+fmt(h)+'</th>'}).join('')+
+    '</tr></thead><tbody>'+b.table.rows.map(function(r){return '<tr>'+r.map(function(c){return '<td>'+fmt(c)+'</td>'}).join('')+'</tr>'}).join('')+'</tbody></table></div>';
+  return '';
+}
+
+var state = {q:'', f:'all'};
+try{ state.f = localStorage.getItem('tbc-f') || 'all'; }catch(e){}
+
+function home(){
+  document.title = 'Hướng dẫn tủ báo cháy';
+  app.innerHTML =
+  '<div class="wrap">'+
+  '<header><h1>Hướng dẫn <span>tủ báo cháy</span></h1><p class="sub">Thao tác cơ bản cho người trực: khi có cháy, khi có lỗi, đèn báo, nút nhấn, cô lập thiết bị.</p></header>'+
+  '<section class="card sos" aria-label="Khi có báo cháy"><h2>Khi tủ báo cháy</h2>'+
+    '<ol><li><b>Coi là cháy thật</b> cho đến khi kiểm tra xong.</li>'+
+    '<li>Đọc <b>zone hoặc địa chỉ</b> trên tủ, cử người đến kiểm tra (không đi một mình).</li>'+
+    '<li>Cháy thật: <b>báo động, di tản, gọi 114</b>, chữa cháy ban đầu.</li>'+
+    '<li>Được <b>tắt còi tại tủ</b> để liên lạc. Chỉ tắt chuông ngoài khi người phụ trách cho phép.</li>'+
+    '<li><b>Reset sau cùng</b>, khi đã hết khói và nút nhấn khẩn đã phục hồi.</li></ol>'+
+    '<div class="call"><a href="tel:114">Gọi 114</a></div></section>'+
+  '<div class="search"><input id="q" type="search" placeholder="Tìm tủ: EST3, Horing, Dahua..." aria-label="Tìm tủ" autocomplete="off"></div>'+
+  '<div class="chips" role="group" aria-label="Lọc loại tủ">'+
+    '<button class="chip" data-f="all">Tất cả</button><button class="chip" data-f="dc">Tủ địa chỉ</button><button class="chip" data-f="th">Tủ thường</button></div>'+
+  '<div class="list" id="list"></div>'+
+  '<section class="card"><h2>Tra nhanh 4 thao tác</h2><div class="tw"><table class="quick"><thead><tr><th>Tủ</th><th>Tắt còi tủ</th><th>Tắt chuông ngoài</th><th>Reset</th><th>Mật khẩu / quyền</th></tr></thead><tbody id="qt"></tbody></table></div>'+
+  '<p class="sub">Mật khẩu là mặc định của hãng. Công trình có thể đã đổi.</p></section>'+
+  '</div>';
+  var q = document.getElementById('q');
+  q.value = state.q;
+  q.addEventListener('input', function(){ state.q = q.value; drawList(); });
+  app.querySelectorAll('.chip').forEach(function(c){
+    c.addEventListener('click', function(){ state.f = c.dataset.f; try{localStorage.setItem('tbc-f',state.f)}catch(e){} drawList(); });
+  });
+  document.getElementById('qt').innerHTML = PANELS.map(function(p){
+    return '<tr><td><a href="#'+p.id+'">'+esc(p.name)+'</a></td><td>'+fmt(p.quick.panel)+'</td><td>'+fmt(p.quick.bell)+'</td><td>'+fmt(p.quick.reset)+'</td><td>'+fmt(p.quick.pass)+'</td></tr>';
+  }).join('');
+  drawList();
+}
+
+function norm(s){return plain(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d')}
+function drawList(){
+  app.querySelectorAll('.chip').forEach(function(c){ c.setAttribute('aria-pressed', c.dataset.f===state.f) });
+  var words = norm(state.q).split(/\s+/).filter(Boolean);
+  var hits = PANELS.filter(function(p){
+    if(state.f!=='all' && p.type!==state.f) return false;
+    if(!words.length) return true;
+    var hay = norm(p.name+' '+p.brand+' '+p.desc+' '+JSON.stringify(p.tabs));
+    return words.every(function(w){return hay.indexOf(w)>=0});
+  });
+  document.getElementById('list').innerHTML = hits.length ? hits.map(function(p){
+    return '<button class="item" data-id="'+p.id+'"><b>'+esc(p.name)+'</b><small>'+esc(p.brand)+' · '+esc(p.desc)+'</small>'+tag(p)+'</button>';
+  }).join('') : '<div class="empty">Chưa có tủ này trong app. Liên hệ UTC để bổ sung.</div>';
+  app.querySelectorAll('.item').forEach(function(b){ b.addEventListener('click', function(){ location.hash = b.dataset.id; }) });
+}
+
+function panel(p, tabKey){
+  document.title = p.name + ' - Hướng dẫn tủ báo cháy';
+  var t = p.tabs.filter(function(x){return x.k===tabKey})[0] || p.tabs[0];
+  app.innerHTML =
+  '<div class="wrap">'+
+  '<div class="top"><button class="back" id="back" type="button">‹ Danh sách</button></div>'+
+  '<header><h1>'+esc(p.name)+'</h1><div class="meta"><span class="sub" style="margin:0">'+esc(p.brand)+'</span>'+tag(p)+'</div><p class="sub">'+esc(p.desc)+'</p></header>'+
+  '<nav class="tabs" role="tablist">'+p.tabs.map(function(x){
+    return '<button class="tab'+(x.k==='chay'?' fire':'')+'" role="tab" data-k="'+x.k+'" aria-selected="'+(x===t)+'">'+esc(x.t)+'</button>'}).join('')+'</nav>'+
+  '<section class="card" role="tabpanel"><h2>'+esc(t.t)+'</h2>'+t.b.map(block).join('')+'</section>'+
+  '<section class="card"><h2>Tra nhanh</h2><div class="keys">'+
+    '<div class="k"><div>Tắt còi tủ</div><p>'+fmt(p.quick.panel)+'</p></div>'+
+    '<div class="k"><div>Tắt chuông ngoài</div><p>'+fmt(p.quick.bell)+'</p></div>'+
+    '<div class="k"><div>Reset</div><p>'+fmt(p.quick.reset)+'</p></div>'+
+    '<div class="k"><div>Mật khẩu / quyền</div><p>'+fmt(p.quick.pass)+'</p></div></div></section>'+
+  '</div>';
+  document.getElementById('back').addEventListener('click', function(){
+    if(history.length>1 && sessionStorage.getItem('tbc-in')) history.back(); else location.hash='';
+  });
+  app.querySelectorAll('.tab').forEach(function(b){
+    b.addEventListener('click', function(){ history.replaceState(null,'','#'+p.id+'/'+b.dataset.k); route(); });
+  });
+  var sel = app.querySelector('.tab[aria-selected="true"]');
+  if(sel && sel.scrollIntoView) sel.scrollIntoView({block:'nearest',inline:'nearest'});
+}
+
+function route(){
+  var h = decodeURIComponent(location.hash.slice(1)).split('/');
+  var p = PANELS.filter(function(x){return x.id===h[0]})[0];
+  if(p){ try{sessionStorage.setItem('tbc-in','1')}catch(e){} panel(p, h[1]); }
+  else home();
+}
+var lastId = null;
+window.addEventListener('hashchange', function(){
+  var id = location.hash.slice(1).split('/')[0];
+  route();
+  if(id!==lastId) window.scrollTo(0,0);
+  lastId = id;
+});
+route();
+
+/* ===== Cài lên điện thoại (chỉ ở bản đóng gói có manifest) ===== */
+var $ = function(id){return document.getElementById(id)};
+if (document.querySelector('link[rel="manifest"]') && !matchMedia('(display-mode: standalone)').matches && !navigator.standalone) {
+  var ev = null, box = $('install'), txt = $('install-t'), btn = $('install-b');
+  window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); ev = e; btn.hidden = false; box.hidden = false; });
+  btn.addEventListener('click', function(){
+    if (!ev) return;
+    ev.prompt();
+    Promise.resolve(ev.userChoice).catch(function(){}).then(function(){ ev = null; box.hidden = true; });
+  });
+  window.addEventListener('appinstalled', function(){ box.hidden = true; });
+  var ua = navigator.userAgent;
+  var ios = /iphone|ipad|ipod/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var inApp = /Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\/|Messenger/i.test(ua);
+  if (inApp) {
+    txt.textContent = ios
+      ? 'Đang mở trong Zalo/Facebook nên không cài được. Bấm nút ⋯ hoặc biểu tượng la bàn, chọn "Mở bằng Safari", rồi cài từ Safari.'
+      : 'Đang mở trong Zalo/Facebook nên không cài được. Bấm ⋮ ở góc trên, chọn "Mở bằng trình duyệt" (Chrome), rồi cài từ Chrome.';
+    btn.hidden = true; box.hidden = false;
+  } else if (ios) {
+    txt.textContent = /CriOS|FxiOS|EdgiOS/.test(ua)
+      ? 'Cài lên iPhone: bấm nút Chia sẻ, chọn "Thêm vào MH chính". Nếu không thấy mục này, mở link bằng Safari.'
+      : 'Cài lên iPhone: bấm nút Chia sẻ (ô vuông có mũi tên lên) ở thanh dưới Safari, kéo xuống chọn "Thêm vào MH chính", rồi bấm "Thêm".';
+    btn.hidden = true; box.hidden = false;
+  }
+}
+if ('serviceWorker' in navigator && document.querySelector('link[rel="manifest"]')) {
+  var foot = document.querySelector('footer'), tg = document.createElement('span');
+  tg.className = 'offline'; foot.appendChild(document.createElement('br')); foot.appendChild(tg);
+  var say = function(t, ok){ tg.textContent = t; tg.classList.toggle('ok', !!ok); };
+  say('Đang lưu app về máy...');
+  navigator.serviceWorker.register('sw.js').then(function(){ return navigator.serviceWorker.ready; })
+    .then(function(){ say(navigator.onLine ? 'Đã lưu về máy, dùng được khi mất mạng.' : 'Đang dùng không có mạng (bản đã lưu trên máy).', true); })
+    .catch(function(){ say('Chưa lưu được về máy. Mở lại khi có mạng.'); });
+  window.addEventListener('offline', function(){ say('Đang dùng không có mạng (bản đã lưu trên máy).', true); });
+}
+})();
+</script>
+
+</body>
+</html>

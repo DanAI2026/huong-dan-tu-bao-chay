@@ -1,0 +1,32 @@
+{
+  "name": "Hướng dẫn tủ báo cháy",
+  "short_name": "Tủ báo cháy",
+  "description": "Thao tác cơ bản khi có cháy, khi có lỗi, đèn báo, nút nhấn, cô lập thiết bị cho 7 dòng tủ báo cháy.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef0f1",
+  "theme_color": "#1d2328",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
