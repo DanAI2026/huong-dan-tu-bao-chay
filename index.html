@@ -755,13 +755,14 @@ var PANELS = [
 {
   id:'cooper', name:'Cooper', brand:'Cooper (Eaton)', type:'dc',
   desc:'Tủ địa chỉ màn hình cảm ứng. Thao tác vận hành phải nhấn Supervisor FRE và nhập mã.',
-  quick:{panel:'[[Mute Buzzer]]', bell:'Tài liệu không ghi', reset:'[[Supervisor FRE]] + `2214` → [[Reset]] → Yes', pass:'Vận hành `2214` · kỹ thuật `143243`'},
+  quick:{panel:'[[Mute Buzzer]]', bell:'[[Silence Alarms]]', reset:'[[Supervisor FRE]] + `2214` → [[Reset]] → Yes', pass:'Vận hành `2214` · kỹ thuật `143243`'},
   tabs:[
     {k:'chay', t:'Khi có cháy', b:[
       {info:'<b>Nhận biết</b>Tủ phát âm thanh cấp báo. Đèn Fire góc trên bên phải sáng đỏ, đèn zone có cháy sáng đỏ. Màn hình hiện vị trí ở thẻ <b>Fires</b>, chạm vào sự kiện để xem chi tiết.'},
       {steps:[
         'Nhấn [[Mute Buzzer]] trên màn hình để tắt còi tại tủ.',
         'Cử người kiểm tra vị trí. Nếu có cài thời gian trễ, chuông các tầng sẽ kêu sau thời gian trễ.',
+        'Khi được phép: nhấn [[Silence Alarms]] để tắt chuông ngoài.',
         'Người kiểm tra thấy cháy thật: báo về người trực tủ bằng cách đập nút nhấn khẩn, hoặc qua điện thoại báo cháy, loa thông báo.',
         'Phát lệnh sơ tán: nhấn [[Supervisor FRE]], nhập `2214`, nhấn [[Evacuate]], chọn <b>Yes</b>. Loa báo cháy toàn bộ khu vực hoạt động.',
         'Gọi 114, chữa cháy tại chỗ.',
@@ -1032,15 +1033,16 @@ var PANELS = [
   ]
 },
 {
-  id:'hochiki-hcp', name:'Hochiki HCP series', brand:'Hochiki', type:'th',
+  id:'hochiki-hcp', name:'Hochiki HCP series 1008', brand:'Hochiki', type:'th',
   desc:'Tủ thường theo zone.',
-  quick:{panel:'[[Buzzer Silence]]', bell:'Tài liệu không ghi', reset:'[[System Reset]]', pass:'Không cần'},
+  quick:{panel:'[[Buzzer Silence]]', bell:'[[Signal Silence]]', reset:'[[System Reset]]', pass:'Không cần'},
   tabs:[
     {k:'chay', t:'Khi có cháy', b:[
       {info:'<b>Nhận biết</b>Đèn General Alarm sáng đỏ, đèn zone có cháy sáng. Chuông trên tủ và chuông ngoài kêu.'},
       {steps:[
         'Đọc zone đang sáng, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
         'Nhấn [[Buzzer Silence]] để tắt chuông tại tủ.',
+        'Khi được phép: nhấn [[Signal Silence]] để tắt chuông ngoài.',
         'Xử lý xong nguyên nhân thì nhấn [[System Reset]].'
       ]},
       {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'}
@@ -1056,10 +1058,11 @@ var PANELS = [
       ]},
       {keys:[
         ['Buzzer Silence','Bật hoặc tắt chuông báo tại tủ.'],
+        ['Signal Silence','Tắt chuông ngoài.'],
         ['Lamp Test','Thử các đèn.'],
         ['System Reset','Reset hệ thống.']
       ]},
-      {p:'Các nút còn lại dùng cho lập trình. Tài liệu không ghi cách tắt chuông ngoài.'}
+      {p:'Các nút còn lại dùng cho lập trình.'}
     ]}
   ]
 },
