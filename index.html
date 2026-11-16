@@ -600,7 +600,7 @@ var PANELS = [
 {
   id:'gst-200', name:'GST-200', brand:'GST', type:'dc',
   desc:'Tủ địa chỉ có màn hình LCD. Reset và sơ tán phải nhập mật khẩu.',
-  quick:{panel:'[[Mute]]', bell:'Tài liệu không ghi', reset:'[[Reset]] → mật khẩu → [[Enter]]', pass:'`11111111` (8 số 1)'},
+  quick:{panel:'[[Mute]]', bell:'[[Silence]] → mật khẩu → [[Enter]]', reset:'[[Reset]] → mật khẩu → [[Enter]]', pass:'`11111111` (8 số 1)'},
   tabs:[
     {k:'chay', t:'Khi có cháy', b:[
       {info:'<b>Nhận biết</b>Đèn FIRE sáng. Màn hình LCD hiện địa chỉ và tên thiết bị ở khu vực cháy. Còi tủ kêu, chuông tại khu vực cháy kêu.'},
@@ -610,6 +610,7 @@ var PANELS = [
         'Cháy thật: nhấn [[EVAC]] để phát lệnh sơ tán (phải nhập mật khẩu).',
         'Gọi 114 và chữa cháy bằng phương tiện tại chỗ.',
         'Cần liên lạc thì nhấn [[Mute]] để tắt còi tại tủ. Còi kêu lại nếu có báo cháy khác.',
+        'Khi được phép tắt chuông ngoài: nhấn [[Silence]], nhập mật khẩu `11111111`, nhấn [[Enter]].',
         'Chữa cháy xong: nhấn [[Reset]], nhập mật khẩu `11111111`, nhấn [[Enter]].',
         'Kiểm tra lại: chỉ còn đèn POWER sáng, các đèn khác tắt.'
       ]},
@@ -627,6 +628,7 @@ var PANELS = [
     {k:'nut', t:'Nút nhấn', b:[
       {keys:[
         ['Mute','Tắt còi trong tủ. Còi kêu lại khi có báo cháy khác.'],
+        ['Silence','Tắt chuông ngoài. Phải nhập mật khẩu rồi nhấn Enter.'],
         ['EVAC','Phát lệnh sơ tán. Phải nhập mật khẩu.'],
         ['Reset','Đưa tủ về bình thường. Phải nhập mật khẩu rồi nhấn Enter.'],
         ['LOG','Xem lại báo cháy, lỗi đã xảy ra trước đó.'],
@@ -1280,14 +1282,15 @@ var PANELS = [
 {
   id:'networx', name:'NetworX', brand:'NetworX', type:'bd',
   desc:'Trung tâm báo cháy và báo trộm, thao tác trên bàn phím. Mã mặc định trong tài liệu là 1234.',
-  quick:{panel:'Tài liệu không ghi', bell:'Tài liệu không ghi', reset:'Bấm `1 2 3 4 * 7`', pass:'`1234`'},
+  quick:{panel:'Tài liệu không ghi', bell:'Bấm `1 2 3 4 * 7`', reset:'Bấm `1 2 3 4 * 7`', pass:'`1234`'},
   tabs:[
     {k:'chay', t:'Khi có cháy', b:[
       {info:'<b>Bình thường</b>Đèn Power và Ready sáng.'},
       {info:'<b>Nhận biết cháy</b>Đèn Fire sáng, đèn Armed chớp, loa bàn phím kêu bíp bíp, đèn zone khu vực cháy chớp.'},
       {steps:[
         'Đọc zone đang chớp, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
-        'Xử lý xong nguyên nhân: bấm lần lượt `1 2 3 4 * 7` để reset.'
+        'Khi được phép tắt chuông ngoài: bấm lần lượt `1 2 3 4 * 7`. Lệnh này tắt chuông ngoài và reset luôn.',
+        'Báo cháy vẫn còn sau khi reset: kiểm tra lại đầu báo, xử lý nguyên nhân rồi bấm lại `1 2 3 4 * 7`.'
       ]},
       {p:'Mã `1234` là mã trong tài liệu. Công trình có thể đã đổi.'}
     ]},
@@ -1306,7 +1309,7 @@ var PANELS = [
     ]},
     {k:'nut', t:'Thao tác bàn phím', b:[
       {table:{head:['Việc cần làm','Bấm'], rows:[
-        ['Reset sau báo cháy','`1 2 3 4 * 7`'],
+        ['Tắt chuông ngoài và reset sau báo cháy','`1 2 3 4 * 7`'],
         ['Bật canh trộm (Armed)','`1 2 3 4`'],
         ['Tắt canh trộm (Disarmed)','`1 2 3 4`'],
         ['Chỉnh âm lượng loa bàn phím','`* 0`, sau đó `1` để tăng, `2` để giảm'],
