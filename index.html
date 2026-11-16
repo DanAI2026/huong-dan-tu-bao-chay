@@ -76,6 +76,8 @@ a{color:var(--accent)}
 .tag{font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;white-space:nowrap}
 .tag.dc{background:var(--ok-soft);color:var(--ok)}
 .tag.th{background:var(--warn-soft);color:var(--warn)}
+.tag.xk{background:var(--accent-soft);color:var(--accent)}
+.tag.bd{background:var(--chip);color:var(--muted);border:1px solid var(--line)}
 .empty{color:var(--muted);text-align:center;padding:14px}
 
 /* Bảng tra nhanh */
@@ -514,9 +516,9 @@ var PANELS = [
   ]
 },
 {
-  id:'tanda', name:'Tanda 8-16 kênh', brand:'Tanda', type:'th',
-  desc:'Tủ thường 8 hoặc 16 zone. Phải cắm và vặn chìa khóa mới bấm được phím.',
-  quick:{panel:'[[Mute Buzzer]]', bell:'[[Silence Alarm]]', reset:'[[Reset]]', pass:'Chìa khóa Control Access'},
+  id:'tanda', name:'Tanda TX100 (4-8-16 kênh)', brand:'Tanda', type:'th',
+  desc:'Tủ thường TX100 series, 4, 8 hoặc 16 zone. Phải cắm và vặn chìa khóa mới bấm được phím.',
+  quick:{panel:'[[Mute]] / [[Mute Buzzer]]', bell:'[[Silence]] / [[Silence Alarm]]', reset:'[[Mute]] rồi [[Reset]]', pass:'Chìa khóa Control Access'},
   tabs:[
     {k:'chay', t:'Khi có cháy', b:[
       {info:'<b>Bình thường</b>Chỉ có đèn POWER ON sáng xanh, còi và chuông không kêu.'},
@@ -526,8 +528,10 @@ var PANELS = [
         'Cắm chìa vào ổ <b>Control Access Key Switch</b>, vặn sang phải (biểu tượng khóa mở).',
         'Nhấn [[Mute Buzzer]] để tắt còi tại tủ.',
         'Khi được phép: nhấn [[Silence Alarm]] để tắt chuông hệ thống.',
-        'Xử lý xong sự cố thì nhấn [[Reset]] để khôi phục. Vặn chìa về vị trí khóa và rút ra.'
+        'Xử lý xong sự cố thì nhấn [[Mute]] rồi nhấn [[Reset]] để khôi phục. Vặn chìa về vị trí khóa và rút ra.'
       ]},
+      {p:'Tùy đời tủ, phím in là <b>Mute</b> hoặc <b>Mute Buzzer</b>, <b>Silence</b> hoặc <b>Silence Alarm</b>.'},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'},
       {p:'Khi hệ thống có lỗi: báo người có trách nhiệm hoặc đơn vị bảo trì để khắc phục.'}
     ]},
     {k:'den', t:'Đèn báo', b:[
@@ -592,6 +596,804 @@ var PANELS = [
       ]}
     ]}
   ]
+},
+{
+  id:'gst-200', name:'GST-200', brand:'GST', type:'dc',
+  desc:'Tủ địa chỉ có màn hình LCD. Reset và sơ tán phải nhập mật khẩu.',
+  quick:{panel:'[[Mute]]', bell:'Tài liệu không ghi', reset:'[[Reset]] → mật khẩu → [[Enter]]', pass:'`11111111` (8 số 1)'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn FIRE sáng. Màn hình LCD hiện địa chỉ và tên thiết bị ở khu vực cháy. Còi tủ kêu, chuông tại khu vực cháy kêu.'},
+      {steps:[
+        'Đọc màn hình để xác định đúng khu vực có cháy.',
+        'Khẩn trương đến khu vực đó để kiểm tra, xác minh.',
+        'Cháy thật: nhấn [[EVAC]] để phát lệnh sơ tán (phải nhập mật khẩu).',
+        'Gọi 114 và chữa cháy bằng phương tiện tại chỗ.',
+        'Cần liên lạc thì nhấn [[Mute]] để tắt còi tại tủ. Còi kêu lại nếu có báo cháy khác.',
+        'Chữa cháy xong: nhấn [[Reset]], nhập mật khẩu `11111111`, nhấn [[Enter]].',
+        'Kiểm tra lại: chỉ còn đèn POWER sáng, các đèn khác tắt.'
+      ]},
+      {warn:'<b>Báo cháy do nút nhấn khẩn</b>Phải đưa nút nhấn về bình thường trước, rồi mới Reset tủ. Reset tủ trước thì tủ sẽ báo lại.'}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {info:'<b>Nhận biết</b>Đèn COMMON FAULT sáng vàng, còi tủ kêu, màn hình LCD hiện các lỗi.'},
+      {steps:[
+        'Nhấn [[Mute]] để tắt còi tại tủ.',
+        'Nhấn [[VIEW FAULT]] để xem các thiết bị đang lỗi.',
+        'Báo đơn vị lắp đặt hoặc bảo trì đến kiểm tra, sửa chữa.'
+      ]},
+      {p:'Tủ lưu lại mọi sự kiện. Không xóa lịch sử cho đến khi sự cố đã khắc phục xong.'}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Mute','Tắt còi trong tủ. Còi kêu lại khi có báo cháy khác.'],
+        ['EVAC','Phát lệnh sơ tán. Phải nhập mật khẩu.'],
+        ['Reset','Đưa tủ về bình thường. Phải nhập mật khẩu rồi nhấn Enter.'],
+        ['LOG','Xem lại báo cháy, lỗi đã xảy ra trước đó.'],
+        ['VIEW FAULT','Xem các thiết bị đang lỗi.'],
+        ['VIEW DISABLE','Xem các thiết bị đang bị vô hiệu hóa.'],
+        ['DISABLE/ENABLE','Vô hiệu hóa hoặc khôi phục thiết bị.']
+      ]}
+    ]},
+    {k:'cl', t:'Cô lập thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Thiết bị bị vô hiệu hóa không báo cháy về tủ. Ghi sổ, bố trí tuần tra, khôi phục ngay khi xong.'},
+      {steps:[
+        'Nhấn [[DISABLE/ENABLE]], chọn <b>DISABLE DEVICE</b>.',
+        'Chọn thiết bị cần vô hiệu hóa.',
+        'Khôi phục: nhấn [[DISABLE/ENABLE]], chọn <b>ENABLE DEVICE</b>, chọn thiết bị.',
+        'Nhấn [[VIEW DISABLE]] để kiểm tra không còn thiết bị nào bị bỏ quên.'
+      ]}
+    ]}
+  ]
+},
+{
+  id:'hochiki-firenet', name:'Hochiki FireNet', brand:'Hochiki', type:'dc',
+  desc:'Tủ địa chỉ có màn hình. Phải mở chìa Enable Control hoặc nhập mật khẩu cấp 2 mới bấm được phím.',
+  quick:{panel:'[[Panel Sounder Silence]]', bell:'[[Alarm Silence]]', reset:'[[Reset]]', pass:'Chìa Enable Control · cấp 2 `22222`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn General Alarm sáng đỏ. Màn hình hiện khu vực có đầu báo hoặc nút nhấn khẩn kích hoạt. Chuông trên tủ và chuông ngoài kêu.'},
+      {steps:[
+        'Đọc khu vực trên màn hình, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Mở chìa khóa <b>Enable Control</b>.',
+        'Nhấn [[Panel Sounder Silence]] để tắt chuông tại tủ.',
+        'Khi được phép: nhấn [[Alarm Silence]] để tắt chuông ngoài.',
+        'Cần cho chuông ngoài kêu lại: nhấn [[Re-Sound Alarm]].',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]] để hệ thống về bình thường.'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['AC Power On','g','Xanh','Có nguồn điện cấp cho tủ.'],
+        ['General Alarm','r','Đỏ','Có báo cháy.'],
+        ['Pre-Alarm','y','Vàng','Chuẩn bị báo cháy.'],
+        ['Common Trouble','y','Vàng','Lỗi hệ thống.'],
+        ['On Test','y','Vàng','Tủ đang ở chế độ thử.'],
+        ['Panel Sounder Silence','y','Vàng','Chuông tại tủ đã được tắt.'],
+        ['Delay Active','y','Vàng','Đang báo trễ.'],
+        ['More Event','y','Vàng','Có nhiều hơn một sự kiện.']
+      ]},
+      {p:'Màu đèn ghi theo thông lệ của hãng: tài liệu chỉ ghi rõ màu của AC Power On và General Alarm. Đối chiếu tủ thực tế.'}
+    ]},
+    {k:'nut', t:'Nút và quyền', b:[
+      {keys:[
+        ['Panel Sounder Silence','Tắt chuông tại tủ.'],
+        ['Alarm Silence','Tắt chuông ngoài.'],
+        ['Re-Sound Alarm','Cho chuông ngoài kêu lại.'],
+        ['Lamp Test','Thử các đèn trên tủ.'],
+        ['Reset','Đưa tủ về bình thường.'],
+        ['More Events','Xem lần lượt khi có từ 2 sự kiện trở lên.']
+      ]},
+      {p:'Các phím còn lại dùng cho lập trình, người trực không dùng.'},
+      {h:'Quyền thao tác'},
+      {dots:[
+        '<b>Cấp 1:</b> chỉ dùng được phím [[More Events]].',
+        '<b>Cấp 2:</b> nhấn một trong các phím 1, 2, 3, 4 rồi nhập `22222`. Sau 120 giây không thao tác, tủ tự về cấp 1.'
+      ]}
+    ]},
+    {k:'cl', t:'Cách ly thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Loop, zone hoặc địa chỉ bị cách ly sẽ không báo cháy. Ưu tiên cách ly có hẹn giờ để tủ tự bật lại.'},
+      {steps:[
+        'Vào cấp 2 (mật khẩu `22222`).',
+        'Đưa con trỏ vào <b>Disablements</b>, nhấn phím sang trái (phím số 2).',
+        'Chọn cách ly theo <b>Disable Loops</b> (cả loop), <b>Disable Zones</b> (zone 1-500) hoặc <b>Disable Address</b> (từng địa chỉ).',
+        'Chọn loop, zone hoặc địa chỉ bằng phím lên xuống, rồi nhấn phím sang phải.',
+        'Chọn <b>Time</b> (hẹn giờ 30 phút đến 24 giờ, hết giờ tự bật lại) hoặc <b>Untimed</b> (phải tự bật lại).',
+        'Nhấn phím sang phải rồi [[Enter]]. Muốn bỏ ngang thì nhấn [[Exit]].',
+        'Bật lại: làm các bước như trên và chọn <b>Enable</b>.'
+      ]},
+      {p:'Phím sang trái dùng để quay lại menu trước.'}
+    ]}
+  ]
+},
+{
+  id:'hochiki-latitude', name:'FireNet Latitude', brand:'Hochiki', type:'dc',
+  desc:'Tủ địa chỉ màn hình cảm ứng, có chữ tiếng Việt. Vặn chìa hoặc nhập mật khẩu để mở phím điều khiển.',
+  quick:{panel:'[[Ngắt Còi Tủ]]', bell:'[[Ngắt Báo Động]]', reset:'[[Reset Hệ thống]]', pass:'Vặn chìa sang phải, hoặc [[Kích hoạt Điều khiển]] + `222222`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire sáng đỏ, còi tủ kêu, chuông trong tòa nhà reo. Màn hình hiện đủ thông tin: loại thiết bị, loop, địa chỉ, tầng, khu vực.'},
+      {steps:[
+        'Đọc vị trí trên màn hình, cử người kiểm tra cháy thật hay báo giả.',
+        '<b>Cháy thật:</b> gọi ngay 114, chữa cháy tại chỗ.',
+        '<b>Báo giả:</b> tắt chuông, xử lý thiết bị báo giả. Hoặc cô lập thiết bị đó và gọi đơn vị lắp đặt.',
+        'Để dùng các phím điều khiển: vặn chìa truy cập sang phải. Hoặc nhấn [[Kích hoạt Điều khiển]] trên màn hình, nhập `222222`, nhấn [[Nhập]].',
+        'Nhấn [[Ngắt Còi Tủ]] để tắt còi tại tủ. Khi được phép, nhấn [[Ngắt Báo Động]] để tắt chuông.',
+        'Khắc phục xong thì nhấn [[Reset Hệ thống]].'
+      ]}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Fire','r','Đỏ','Có báo cháy từ thiết bị.'],
+        ['CO Alarm','y','Vàng','Có tín hiệu từ đầu báo khí CO.'],
+        ['Supervisory Alarm','y','Vàng','Có tín hiệu giám sát (công tắc dòng chảy, van...).'],
+        ['Pre-Alarm','y','Vàng','Có đầu báo sắp tới ngưỡng báo cháy.'],
+        ['Delay Active','y','Vàng','Chế độ báo trễ đang chạy.'],
+        ['NAC Trouble / Disabled','y','Vàng','Ngõ ra chuông bị lỗi: mất điện trở giám sát, hở mạch, chập mạch...'],
+        ['General Trouble','y','Vàng','Có lỗi bất kỳ.'],
+        ['Power Trouble','y','Vàng','Lỗi nguồn: điện 220V, nguồn 24V của module...'],
+        ['Disablements','y','Vàng','Có thiết bị hoặc chức năng bị vô hiệu hóa.'],
+        ['On Test','y','Vàng','Tủ đang ở chế độ thử.'],
+        ['NAC Silenced','y','Vàng','Đã nhấn tắt chuông báo động.'],
+        ['AC Power On','g','Xanh','Có điện 220V cấp cho tủ.']
+      ]}
+    ]},
+    {k:'nut', t:'Phím trên màn hình', b:[
+      {keys:[
+        ['Kích hoạt Điều khiển','Mở màn hình đăng nhập để nhập mật khẩu cấp 2.'],
+        ['Ngắt Còi Tủ','Tắt còi tại tủ.'],
+        ['Ngắt Báo Động','Tắt chuông báo động.'],
+        ['Reset Hệ thống','Đưa tủ về bình thường sau khi khắc phục xong.'],
+        ['Quay lại','Về màn hình trước.']
+      ]},
+      {p:'Các thẻ phía trên màn hình: Zone báo cháy, CO, Lỗi, Giám sát, Vô hiệu hóa, Điều khiển người dùng. Chạm vào thẻ để xem danh sách sự kiện của nhóm đó.'},
+      {info:'<b>Phím chưa hiện</b>Các phím điều khiển chỉ hiện khi đã ở cấp 2 (vặn chìa hoặc nhập mật khẩu).'}
+    ]}
+  ]
+},
+{
+  id:'cooper', name:'Cooper', brand:'Cooper (Eaton)', type:'dc',
+  desc:'Tủ địa chỉ màn hình cảm ứng. Thao tác vận hành phải nhấn Supervisor FRE và nhập mã.',
+  quick:{panel:'[[Mute Buzzer]]', bell:'Tài liệu không ghi', reset:'[[Supervisor FRE]] + `2214` → [[Reset]] → Yes', pass:'Vận hành `2214` · kỹ thuật `143243`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Tủ phát âm thanh cấp báo. Đèn Fire góc trên bên phải sáng đỏ, đèn zone có cháy sáng đỏ. Màn hình hiện vị trí ở thẻ <b>Fires</b>, chạm vào sự kiện để xem chi tiết.'},
+      {steps:[
+        'Nhấn [[Mute Buzzer]] trên màn hình để tắt còi tại tủ.',
+        'Cử người kiểm tra vị trí. Nếu có cài thời gian trễ, chuông các tầng sẽ kêu sau thời gian trễ.',
+        'Người kiểm tra thấy cháy thật: báo về người trực tủ bằng cách đập nút nhấn khẩn, hoặc qua điện thoại báo cháy, loa thông báo.',
+        'Phát lệnh sơ tán: nhấn [[Supervisor FRE]], nhập `2214`, nhấn [[Evacuate]], chọn <b>Yes</b>. Loa báo cháy toàn bộ khu vực hoạt động.',
+        'Gọi 114, chữa cháy tại chỗ.',
+        'Xử lý xong: nhấn [[Supervisor FRE]], nhập `2214`, nhấn [[Reset]], chọn <b>Yes</b>.'
+      ]},
+      {p:'Màn hình tối sau một lúc không dùng là bình thường. Nhấn [[Mute Buzzer]] hoặc [[Supervisor FRE]] để sáng lại.'}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {info:'<b>Nhận biết</b>Còi trong tủ kêu, đèn General Fault sáng, lỗi hiện trên màn hình.'},
+      {steps:[
+        'Nhấn [[Mute Buzzer]] để tắt còi.',
+        'Chạm vào dòng lỗi để xem nguyên nhân và vị trí.',
+        'Không tự xử lý được: báo đơn vị bảo trì.'
+      ]},
+      {h:'Pre-Alarm: đầu báo sắp báo cháy'},
+      {p:'Đầu báo khói hoặc nhiệt bị bẩn sẽ hiện Pre-Alarm. Để lâu sẽ chuyển thành báo cháy.'},
+      {steps:[
+        'Xem Pre-Alarm là đầu báo nhiệt hay khói, ở vị trí nào.',
+        'Vệ sinh đầu báo đó.',
+        'Reset tủ (Supervisor FRE + `2214` → Reset → Yes).'
+      ]}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Power On','g','Xanh','Tủ đang có nguồn.'],
+        ['Fire','r','Đỏ','Tủ phát hiện có cháy.'],
+        ['General Fault','y','Báo lỗi','Lỗi của đầu báo, module hoặc chuông.'],
+        ['System Fault','y','Báo lỗi','Lỗi của tủ báo cháy.'],
+        ['Power Fault','y','Báo lỗi','Lỗi nguồn điện hoặc ắc quy.'],
+        ['Sounder Disable','y','Báo lỗi','Mạch chuông đang bị tắt.'],
+        ['System Disable','y','Báo lỗi','Có thành phần trong hệ thống bị tắt.'],
+        ['System Test','y','Trạng thái','Hệ thống đang được thử.'],
+        ['FRE Disable','y','Trạng thái','Ngõ ra FRE bị tắt.'],
+        ['Extinguisher Activated','r','Trạng thái','Đã kích hoạt xả chữa cháy.'],
+        ['Delay Active','y','Vàng','Hệ thống đang chạy với thời gian trễ chống báo giả.']
+      ]},
+      {p:'Bình thường: chỉ đèn Power On sáng xanh, các đèn khác tắt. Tài liệu chỉ ghi rõ màu đèn Power On, Fire, Delay Active.'}
+    ]},
+    {k:'cl', t:'Tắt thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Thiết bị bị Disable không báo cháy. Chỉ dùng khi đầu báo bẩn hoặc nút nhấn bị vỡ chưa sửa ngay được. Sửa xong phải Enable lại.'},
+      {steps:[
+        'Nhấn [[Supervisor FRE]], nhập `2214`.',
+        'Chọn thẻ <b>Others</b>, chọn <b>Enable/Disable</b>.',
+        'Chọn <b>Enable/Disable Address devices</b>.',
+        'Tìm thiết bị, chạm vào nút <b>Enable</b> bên phải để chuyển thành <b>Disable</b>.',
+        'Bật lại: làm như trên, chạm nút <b>Disable</b> để chuyển thành <b>Enable</b>.',
+        'Reset lại tủ: [[Supervisor FRE]] + `2214` → [[Reset]] → Yes.'
+      ]},
+      {p:'Đèn Disable sáng vàng khi có thiết bị bị tắt. Xem danh sách ở thẻ <b>Disabled/Test</b>.'}
+    ]},
+    {k:'them', t:'Menu khác', b:[
+      {table:{head:['Chức năng','Đường vào','Mã'], rows:[
+        ['Xem sự kiện (View Log)','Others → View Log. Lọc Fires, Faults, Test, All.','`2214`'],
+        ['Tự tìm lỗi (Check Auto Config)','Others → Check Auto Config → Check Auto Config → Yes. Tìm chỗ hở mạch, đứt dây.','`2214`'],
+        ['Thay thiết bị (Replace Devices)','Others → Check Auto Config → Replace Devices → Yes, chọn loop và địa chỉ → OK. Thiết bị thay phải cùng loại.','`2214`'],
+        ['Thử thiết bị / thử zone','Test → Test Device hoặc Test Zone.','`143243`'],
+        ['Đo tín hiệu đầu báo','Commission → Analogue Level → Go To, nhập địa chỉ → OK. Chỉ đo thiết bị đang lỗi hoặc báo cháy.','`143243`'],
+        ['Đổi ngày giờ','Configure → Change Date/Time. Xong thì reset tủ.','`143243`'],
+        ['Đổi tên địa chỉ, tên zone','Configure → Change → Change Address Text / Change Text. Xong thì reset tủ.','`143243`'],
+        ['Thêm, xóa zone và thiết bị','Configure → Add/Delete.','`143243`']
+      ]}},
+      {warn:'<b>Mã 143243 dành cho kỹ thuật</b>Thêm, xóa, đổi tên sai có thể làm hệ thống mất báo cháy. Người trực không dùng.'}
+    ]}
+  ]
+},
+{
+  id:'hochiki-hcvr3', name:'Hochiki HCVR-3', brand:'Hochiki', type:'xk',
+  desc:'Tủ điều khiển chữa cháy bằng khí, 2 zone. Có đếm ngược trước khi xả khí và nút tạm dừng xả (Abort).',
+  quick:{panel:'[[Silence Buzzer]]', bell:'[[Silence/Sound Alarm]]', reset:'Chìa Enable Access rồi [[Reset]]', pass:'Chìa Enable Access (cấp 2)'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {stop:'<b>Đèn Release Imminent sáng: rời phòng ngay</b>Tủ đang đếm ngược để xả khí chữa cháy. Mọi người phải ra khỏi phòng được bảo vệ trước khi hết giờ, đóng cửa lại.'},
+      {h:'Lần báo thứ nhất (1 zone)'},
+      {p:'Đèn Fire sáng, đèn zone có cháy chớp, đèn <b>1st Stage Activated</b> sáng. Chuông và đèn báo động hoạt động. Chưa xả khí.'},
+      {h:'Lần báo thứ hai (cả 2 zone)'},
+      {p:'Đèn <b>Release Imminent</b> sáng, màn hình đếm ngược. Hết giờ thì tủ xả khí, đèn <b>Extinguishant Release</b> sáng.'},
+      {steps:[
+        'Cử người kiểm tra phòng có báo cháy. Gọi 114 nếu cháy thật.',
+        'Báo giả, hoặc còn người trong phòng: nhấn và giữ [[ABORT]] trong lúc đang đếm ngược. Đèn Abort Activated sáng.',
+        'Cháy thật, đã hết người trong phòng, muốn xả ngay: kéo nút [[Manual Extinguishant Release]] trên tủ, hoặc nút [[Fire Suppression Release]] lắp bên ngoài.',
+        'Xong việc: đưa nút nhấn báo cháy về bình thường, dùng chìa <b>Enable Access</b> vào cấp 2, nhấn [[Reset]].',
+        'Kiểm tra: chỉ còn đèn POWER ON sáng, các đèn khác tắt.'
+      ]},
+      {warn:'<b>ABORT chỉ dùng được 1 lần</b>Trong mỗi lần đếm ngược, nút ABORT chỉ có tác dụng một lần. Nhấn và giữ, không nhấn rồi thả.'}
+    ]},
+    {k:'chedo', t:'Chế độ xả', b:[
+      {table:{head:['Chế độ','Cách tủ xả khí'], rows:[
+        ['Manual Only','Chỉ xả khi có người kéo nút xả bằng tay.'],
+        ['Auto & Manual','Tự xả khi cả zone 1 và zone 2 cùng báo cháy, sau thời gian trễ. Vẫn xả được bằng nút kéo tay.']
+      ]}},
+      {p:'Khi chỉ một zone báo cháy, tủ chưa xả khí ở cả hai chế độ.'}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Silence Buzzer','Tắt còi trong tủ. Còi kêu lại nếu có báo cháy hoặc lỗi mới.'],
+        ['Silence/Sound Alarm','Tắt toàn bộ chuông, còi báo cháy. Nhấn lại để chúng kêu lại.'],
+        ['ABORT (nhấn và giữ)','Tạm dừng xả khí trong lúc đếm ngược. Dùng được 1 lần.'],
+        ['Manual Extinguishant Release','Nút xả khí bằng tay trên tủ. Tủ đếm ngược rồi xả.'],
+        ['Fire Suppression Release','Nút xả khí bằng tay lắp bên ngoài, tác dụng như nút trên tủ.'],
+        ['Reset','Đưa tủ về bình thường. Phải mở chìa Enable Access (cấp 2).']
+      ]},
+      {p:'Có lỗi: báo đơn vị lắp đặt đến kiểm tra.'}
+    ]}
+  ]
+},
+{
+  id:'horing-8zone', name:'Horing AH-00212 / 8 zone', brand:'Horing Lih', type:'th',
+  desc:'Tủ thường theo zone, có đồng hồ đo điện áp. Dòng AH-00212 và loại 8 zone có cùng các nút Main bell, Area bell, Reset.',
+  quick:{panel:'[[Main bell]]', bell:'[[Area bell]]', reset:'[[Reset]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn zone sáng, khoảng 10 giây sau đèn FIRE sáng đỏ nếu đầu báo vẫn còn báo (chức năng chống báo giả). Chuông trên tủ và chuông ngoài kêu. Tên khu, tầng ghi phía trên mỗi zone.'},
+      {steps:[
+        'Đọc tên khu, tầng của zone đang sáng, đối chiếu bảng phân bố khu vực, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Nhấn [[Main bell]] để tắt chuông tại tủ.',
+        'Khi được phép: nhấn [[Area bell]] để tắt chuông ngoài.',
+        'Xử lý xong nguyên nhân (hết khói, nút nhấn khẩn đã phục hồi) thì nhấn [[Reset]].'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'},
+      {p:'Đèn Attention SW sáng: có nút trên tủ đang ở trạng thái bị nhấn (ví dụ đã tắt chuông). Nhớ nhấn trả lại sau khi xong việc.'},
+      {h:'Thử zone (kỹ thuật)'},
+      {p:'Nhấn [[Alarm test]] + [[Accum. SW]], sau đó nhấn nút của zone muốn thử.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Đèn đỏ ở mỗi zone','r','Đỏ','Zone đó báo cháy.'],
+        ['Đèn vàng ở mỗi zone','y','Vàng','Zone đó bị lỗi.'],
+        ['FIRE','r','Đỏ','Tủ đang báo cháy.'],
+        ['AC Power','g','Trạng thái','Nguồn điện 220V.'],
+        ['Stanby PW','o','Trạng thái','Nguồn pin 24V.'],
+        ['Accum. ind.','o','Trạng thái','Chức năng chống báo cháy giả.'],
+        ['Attention SW','y','Trạng thái','Có nút trên tủ đang ở trạng thái được kích hoạt.'],
+        ['Discon. ind','y','Trạng thái','Đứt cầu chì hoặc đứt điện trở cuối tuyến.']
+      ]},
+      {p:'Đồng hồ VOLTMETER và 3 đèn H, N, L hiển thị điện áp nguồn. Tài liệu không ghi màu đèn trạng thái.'}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Caution snd','Tắt chuông báo lỗi của tủ.'],
+        ['Main bell','Tắt chuông báo cháy của tủ.'],
+        ['Area bell','Tắt chuông báo cháy của các khu, tầng.'],
+        ['Reset','Reset lại hệ thống báo cháy.'],
+        ['Auto reset','Reset tự động hệ thống.'],
+        ['Batt. Test','Thử pin dự phòng.'],
+        ['Discon. Test','Thử lỗi trên bo mạch của các zone (dùng khi kiểm tra).'],
+        ['Alam. Test','Thử báo cháy các zone (dùng khi kiểm tra).'],
+        ['Accum. SW','Tắt chức năng chống báo giả (báo cháy ngay, bỏ qua thời gian chờ).'],
+        ['Nút tròn ở mỗi zone','Chọn zone khi thử báo cháy (dùng cùng Alarm test + Accum. SW).']
+      ]},
+      {warn:'<b>Nút thử chỉ dùng khi bảo trì</b>Nhấn các nút Test sẽ làm tủ báo cháy hoặc báo lỗi. Báo trước cho người trong tòa nhà.'}
+    ]}
+  ]
+},
+{
+  id:'horing-ahc871', name:'Horing AHC-871', brand:'Horing Lih', type:'th',
+  desc:'Tủ thường theo zone. Tắt chuông bằng công tắc gạt (On/Off), không phải nút nhấn.',
+  quick:{panel:'Gạt [[Bell switch]] về Off', bell:'Gạt [[Area bell]] về Off', reset:'[[Revert]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire sáng, đèn zone có đầu báo hoặc nút nhấn khẩn kích hoạt sáng. Chuông trên bo mạch và chuông ngoài kêu.'},
+      {steps:[
+        'Đọc zone đang sáng, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Tắt chuông tại tủ: gạt công tắc [[Bell switch]] về <b>Off</b>.',
+        'Khi được phép: gạt công tắc [[Area bell]] về <b>Off</b> để tắt chuông ngoài.',
+        'Xử lý xong nguyên nhân thì nhấn [[Revert]] để reset.',
+        'Gạt các công tắc chuông về lại <b>On</b>. Nếu quên, lần cháy sau chuông sẽ không kêu.'
+      ]},
+      {warn:'<b>Revert không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới nhấn Revert.'}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {info:'<b>Nhận biết</b>Đèn Disconnect và đèn zone bị lỗi chớp, chuông trên bo mạch kêu. Nguyên nhân: chập mạch hoặc lỗi điện trở cuối tuyến.'},
+      {steps:[
+        'Gạt công tắc [[Disconnection sound]] về <b>Off</b> để tắt tiếng.',
+        'Kiểm tra đường dây của zone đang chớp, hoặc báo đơn vị bảo trì.',
+        'Sửa xong, gạt [[Disconnection sound]] về lại <b>On</b>.'
+      ]}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['Fire Alarm','r','Đỏ','Đang có cháy.'],
+        ['Zone','r','Theo zone','Khu vực báo cháy hoặc bị lỗi.'],
+        ['AC','g','Trạng thái','Có nguồn điện lưới.'],
+        ['Battery','o','Trạng thái','Nguồn ắc quy.'],
+        ['Disconnect','y','Báo lỗi','Lỗi kết nối đường dây.'],
+        ['Battery power (lỗi)','y','Báo lỗi','Lỗi nguồn ắc quy.'],
+        ['AC power (lỗi)','y','Báo lỗi','Lỗi nguồn điện lưới.']
+      ]},
+      {keys:[
+        ['Revert','Reset hệ thống.'],
+        ['Auto Revert','Tự động reset hệ thống.'],
+        ['Bell switch','Công tắc tắt chuông trên tủ.'],
+        ['Area bell','Công tắc tắt chuông ngoài.'],
+        ['Disconnection sound','Công tắc tắt tiếng báo lỗi kết nối.']
+      ]},
+      {p:'Tài liệu không ghi màu đèn trạng thái. Đối chiếu tủ thực tế.'}
+    ]}
+  ]
+},
+{
+  id:'horing-qsp120', name:'Horing QSP-120', brand:'Horing Lih', type:'xk',
+  desc:'Tủ điều khiển xả khí chữa cháy. Có khóa chọn xả tự động hoặc bằng tay, nút Start và Stop.',
+  quick:{panel:'[[Main buzzer]]', bell:'[[Silence 1]] / [[Silence 2]]', reset:'[[Reset]] (cũng hủy xả khí)', pass:'Không ghi'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {stop:'<b>Tủ đang đếm ngược: rời phòng ngay</b>Khi đủ điều kiện, tủ đếm ngược rồi xả khí. Mọi người phải ra khỏi phòng được bảo vệ trước khi hết giờ.'},
+      {info:'<b>Nhận biết</b>Đèn Zone 1, Zone 2 sáng theo khu vực có đầu báo hoặc nút nhấn khẩn kích hoạt. Đèn RELEASE sáng: đang xả khí.'},
+      {steps:[
+        'Cử người kiểm tra phòng. Cháy thật: gọi 114.',
+        'Nhấn [[Main buzzer]] để tắt chuông tại tủ. Khi được phép, nhấn [[Silence 1]] hoặc [[Silence 2]] để tắt chuông ngoài.',
+        'Đang đếm ngược mà còn người trong phòng: nhấn [[Stop]] để tạm ngưng.',
+        'Xác nhận không có cháy, không cần xả: nhấn [[Reset]] để hủy xả khí.',
+        'Cháy thật, đã hết người trong phòng, cần xả ngay: nhấn [[Start]].',
+        'Xong việc: xử lý đầu báo, nút nhấn rồi nhấn [[Reset]].'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi.'}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['RELEASE','r','Trạng thái','Đang xả khí.'],
+        ['EMV','r','Trạng thái','Đã kích hoạt xả khí.'],
+        ['Zone','r','Theo zone','Khu vực báo cháy.'],
+        ['MPS Door','y','Trạng thái','Cửa hộp xả khí bằng tay đang mở.'],
+        ['Output fault','y','Báo lỗi','Ngõ kích hoạt xả bị lỗi.'],
+        ['AC Power','g','Trạng thái','Có nguồn điện lưới.'],
+        ['DC Power','o','Trạng thái','Nguồn ắc quy.'],
+        ['DC Fault','y','Báo lỗi','Mất nguồn ắc quy.']
+      ]},
+      {keys:[
+        ['Khóa Auto / Manual','Chọn xả khí tự động hay chỉ xả bằng tay.'],
+        ['Start','Xả khí.'],
+        ['Stop','Tạm ngưng, quay lại đếm ngược.'],
+        ['Reset','Reset hệ thống, hủy xả khí.'],
+        ['Silence 1, 2','Tắt chuông ngoài.'],
+        ['Main buzzer','Tắt chuông tại tủ.']
+      ]},
+      {p:'Tài liệu ghi các đèn, nút còn lại xem tài liệu của hãng. Tài liệu không ghi màu đèn.'}
+    ]}
+  ]
+},
+{
+  id:'hochiki-hca', name:'Hochiki HCA series', brand:'Hochiki', type:'xk',
+  desc:'Tủ báo cháy kèm điều khiển xả khí, có màn hình LCD hiện trạng thái từng zone bằng chữ cái.',
+  quick:{panel:'[[Silence]]', bell:'[[Silence]]', reset:'[[Reset]] (cũng hủy xả khí)', pass:'Không ghi'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {stop:'<b>Tủ đang đếm ngược: rời phòng ngay</b>Khi đủ điều kiện, tủ đếm ngược rồi xả khí. Mọi người phải ra khỏi phòng trước khi hết giờ.'},
+      {steps:[
+        'Màn hình hiện zone đang báo cháy (chữ <b>A</b>), chuông reo. Cử người kiểm tra. Cháy thật: gọi 114.',
+        'Nhấn [[Silence]] để tắt chuông. Nhấn [[Silence]] lần nữa để chuông kêu lại.',
+        'Đang đếm ngược mà còn người trong phòng: nhấn nút <b>Ngưng tạm thời</b>.',
+        'Xác nhận không có cháy, không cần xả: nhấn [[Reset]] để hủy xả khí.',
+        'Cháy thật, đã hết người, cần xả ngay: nhấn nút <b>Xả khẩn cấp</b>.',
+        'Xong việc: nhấn [[Reset]] để tủ về bình thường.'
+      ]}
+    ]},
+    {k:'den', t:'Đèn và màn hình', b:[
+      {leds:[
+        ['Power','g','Xanh','Có nguồn cung cấp.'],
+        ['Alarm','r','Đỏ','Có cháy.'],
+        ['Trouble','y','Báo lỗi','Lỗi hoặc hỏng một chức năng.'],
+        ['Silence','y','Trạng thái','Đã tắt chuông.'],
+        ['Supervisory','y','Trạng thái','Đang giám sát.']
+      ]},
+      {table:{head:['Chữ trên LCD','Zone đang'], rows:[
+        ['N','Bình thường'],['A','Báo cháy'],['T','Bị lỗi'],['S','Giám sát'],['D','Bị tắt'],['P','Chuẩn bị xả khí'],['R','Đã xả khí']
+      ]}}
+    ]}
+  ]
+},
+{
+  id:'hochiki-hcp', name:'Hochiki HCP series', brand:'Hochiki', type:'th',
+  desc:'Tủ thường theo zone.',
+  quick:{panel:'[[Buzzer Silence]]', bell:'Tài liệu không ghi', reset:'[[System Reset]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn General Alarm sáng đỏ, đèn zone có cháy sáng. Chuông trên tủ và chuông ngoài kêu.'},
+      {steps:[
+        'Đọc zone đang sáng, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Nhấn [[Buzzer Silence]] để tắt chuông tại tủ.',
+        'Xử lý xong nguyên nhân thì nhấn [[System Reset]].'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['General Alarm','r','Đỏ','Có cháy.'],
+        ['AC On','g','Xanh','Có nguồn cung cấp.'],
+        ['Zone','r','Theo zone','Khu vực báo cháy.'],
+        ['Test Config','y','Trạng thái','Đang ở chế độ lập trình.'],
+        ['Battery Trouble','y','Vàng','Mất nguồn ắc quy.'],
+        ['Common Trouble','y','Báo lỗi','Lỗi hệ thống.']
+      ]},
+      {keys:[
+        ['Buzzer Silence','Bật hoặc tắt chuông báo tại tủ.'],
+        ['Lamp Test','Thử các đèn.'],
+        ['System Reset','Reset hệ thống.']
+      ]},
+      {p:'Các nút còn lại dùng cho lập trình. Tài liệu không ghi cách tắt chuông ngoài.'}
+    ]}
+  ]
+},
+{
+  id:'hochiki-hcv', name:'Hochiki HCV series', brand:'Hochiki', type:'th',
+  desc:'Tủ thường theo zone. Phải tra chìa Enable Control và vặn theo chiều kim đồng hồ mới dùng được phím.',
+  quick:{panel:'Chìa + [[Alarm/Fault Warning Silence]]', bell:'Chìa + [[Silence/Sound Alarm]]', reset:'Chìa + [[Reset]]', pass:'Chìa Enable Control'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire sáng đỏ, đèn zone có cháy sáng, chuông reo.'},
+      {steps:[
+        'Đọc zone đang sáng, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Tra chìa <b>Enable Control</b>, vặn theo chiều kim đồng hồ.',
+        'Nhấn [[Alarm/Fault Warning Silence]] để tắt chuông.',
+        'Cần cho chuông kêu lại ngay: nhấn [[Silence/Sound Alarm]].',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]]. Vặn chìa ngược lại và rút ra.'
+      ]}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['Fire','r','Đỏ','Có cháy.'],
+        ['Power On','g','Xanh','Có nguồn cung cấp.'],
+        ['Delay On','y','Trạng thái','Đang báo trễ.'],
+        ['Test Mode On','y','Trạng thái','Đang ở chế độ thử.'],
+        ['General Disablements','y','Trạng thái','Có chức năng bị tắt.'],
+        ['Power Fault','y','Vàng','Mất nguồn AC.'],
+        ['Sounder Fault/Disablements','y','Trạng thái','Chuông bị lỗi hoặc bị tắt.'],
+        ['General Fault/Disablement','y','Báo lỗi','Lỗi hoặc hỏng một chức năng.'],
+        ['System Fault','y','Báo lỗi','Lỗi hệ thống.'],
+        ['Alarm/Fault Warning Silenced','y','Trạng thái','Đã tắt chuông.']
+      ]},
+      {keys:[
+        ['Silence/Sound Alarm','Bật hoặc tắt chuông báo động ngay. Cần chìa.'],
+        ['Alarm/Fault Warning Silence','Tắt chuông khi có báo động. Cần chìa.'],
+        ['Reset','Reset hệ thống. Cần chìa.'],
+        ['Lamp Test','Thử các đèn.'],
+        ['Mode 10+ / Mode 1+','Nhập dữ liệu khi lập trình. Người trực không dùng.']
+      ]}
+    ]}
+  ]
+},
+{
+  id:'hochiki-nhat', name:'Hochiki Nhật (RPP, RPS)', brand:'Hochiki', type:'th',
+  desc:'Tủ thường hàng Nhật, có đèn số 7 đoạn hiện số zone hoặc mã lỗi. Dòng RPS có ít nút hơn RPP.',
+  quick:{panel:'[[Silence Main Alarm]]', bell:'[[Temporary Silence Local Sounder]]', reset:'[[Reset]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn zone có cháy sáng, chuông báo động reo. Đèn Manual Call Point sáng nếu do nút nhấn khẩn.'},
+      {steps:[
+        'Đọc số zone (trên đèn số hoặc đèn zone), cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Nhấn [[Silence Main Alarm]] để tắt âm báo tại tủ.',
+        'Khi được phép: nhấn [[Temporary Silence Local Sounder]] để tắt chuông. Nhấn lại để chuông kêu lại.',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]].'
+      ]},
+      {info:'<b>Chỗ chưa khớp trong tài liệu</b>Phần quy trình của tài liệu gốc ghi tắt chuông bằng nút "Silence Fault Alarm", nhưng phần mô tả nút ghi nút đó dùng cho âm báo lỗi. Em ghi theo phần mô tả nút. Đối chiếu tủ thực tế.'},
+      {p:'Đèn Switch Caution sáng: có nút trên tủ đang bị nhấn giữ. Nhấn trả lại sau khi xong việc.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['AC Power On','g','Xanh / đỏ','Xanh: điện lưới. Đỏ: đang chạy pin dự phòng.'],
+        ['Fire Alarm','r','Đỏ','Có cháy.'],
+        ['Manual Call Point','r','Trạng thái','Báo động do nút nhấn khẩn.'],
+        ['Switch Caution','y','Trạng thái','Có nút trên tủ đang bị nhấn.'],
+        ['Silence Local Sounder','y','Trạng thái','Đã tắt chuông.'],
+        ['Time Delay','y','Trạng thái','Tủ đang trong thời gian trễ.'],
+        ['Telephone','y','Trạng thái','Có cuộc gọi (liên lạc nội bộ).'],
+        ['Indication / Signal 1-3','y','Trạng thái','Tín hiệu từ tủ hoặc thiết bị bên ngoài.'],
+        ['Fault Indication','y','Trạng thái','Đèn số đang hiện mã lỗi.'],
+        ['Zone Indication','o','Trạng thái','Đèn số đang hiện số zone.']
+      ]}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['Reset','Reset tủ.'],
+        ['Silence Main Alarm','Bật, tắt âm báo cháy tại tủ.'],
+        ['Temporary Silence Local Sounder','Bật, tắt chuông báo động.'],
+        ['Silence Fault Alarm','Bật, tắt âm báo khi có lỗi.'],
+        ['Battery Test','Thử pin dự phòng.'],
+        ['Cut Off Signal Transfer','Không kích hoạt ngõ ra K2, K3 khi có cháy (ngắt liên kết).'],
+        ['Fire Judge','Hủy chức năng làm câm chuông.'],
+        ['Sound All Together','Kích hoạt tất cả ngõ ra.'],
+        ['Cancel Time Delay','Hủy thời gian trễ.'],
+        ['Time Delay / Fault Zone Line Confirmation','Xem zone nào đang trễ hoặc bị lỗi.'],
+        ['Test Reset / Fire Test','Thử đầu báo, thử đèn. Chỉ dùng khi bảo trì.'],
+        ['No Link Fire Hydrant','Không kích hoạt ngõ ra H1, H2.']
+      ]},
+      {p:'Dòng RPS chỉ có: Reset, Silence Main Alarm, Temporary Silence Local Sounder, Battery Test, Cut Off Signal Transfer. Nút còn lại dùng cho lập trình.'}
+    ]}
+  ]
+},
+{
+  id:'tanda-tx7', name:'Tanda TX7 series', brand:'Tanda', type:'dc',
+  desc:'Tủ địa chỉ có màn hình. Có nút sơ tán Evac và các nút xem sự kiện theo nhóm.',
+  quick:{panel:'[[BUZ Mute]]', bell:'[[Silence]]', reset:'[[Mute]] rồi [[Reset]]', pass:'Hỏi mật khẩu thì nhấn [[V]]'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire Alarm sáng đỏ, màn hình hiện zone. Chuông trên tủ và chuông ngoài kêu.'},
+      {steps:[
+        'Xem vị trí thiết bị: nhấn <b>Detail</b> trên màn hình hoặc [[F1]]. Cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Nhấn [[BUZ Mute]] để tắt còi tại tủ.',
+        'Khi được phép: nhấn [[Silence]] để tắt chuông ngoài.',
+        'Tủ hỏi mật khẩu thì nhấn [[V]].',
+        'Xử lý xong nguyên nhân: nhấn [[Mute]] rồi nhấn [[Reset]].'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'},
+      {p:'Nút [[Evac]] kích hoạt các thiết bị sơ tán khẩn cấp. Chỉ dùng theo lệnh người phụ trách.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Fire Alarm','r','Đỏ','Có cháy.'],
+        ['Pre-alarm','y','Trạng thái','Thiết bị sắp báo cháy.'],
+        ['General Fault','y','Báo lỗi','Lỗi thiết bị hoặc sự cố khác.'],
+        ['System Fault','y','Báo lỗi','Lỗi bên trong tủ.'],
+        ['Supervisory','y','Trạng thái','Thiết bị giám sát.'],
+        ['Activation','o','Trạng thái','Thiết bị đã kích hoạt.'],
+        ['Disable','y','Trạng thái','Có thiết bị hoặc thành phần bị tắt.'],
+        ['Test','y','Trạng thái','Chế độ thử.'],
+        ['AC Fault','y','Báo lỗi','Lỗi điện 220V.'],
+        ['Battery Fault','y','Báo lỗi','Lỗi ắc quy.'],
+        ['Earth Fault','y','Báo lỗi','Chạm đất.'],
+        ['Detector Dirty','y','Trạng thái','Đầu báo bẩn, cần vệ sinh.'],
+        ['Output Delay / Delay Mode','y','Trạng thái','Ngõ ra hoặc tủ đang kích hoạt trễ.'],
+        ['Fire Alarm Output Activated','r','Trạng thái','Ngõ ra Output 1 trên tủ đã kích hoạt.'],
+        ['FPE Output Activated','r','Trạng thái','Ngõ ra Output 2 trên tủ đã kích hoạt.'],
+        ['Fire Alarm / FPE Output Fault/Disable','y','Báo lỗi','Ngõ ra bị lỗi hoặc bị vô hiệu.'],
+        ['Sounder Activated','r','Trạng thái','Chuông còi ngoài đang kêu.'],
+        ['Sounder Fault/Disable','y','Báo lỗi','Chuông còi ngoài lỗi hoặc bị vô hiệu.'],
+        ['Silence','y','Trạng thái','Đã tắt chuông còi ngoài.'],
+        ['Evacuation','r','Trạng thái','Đang ở chế độ sơ tán khẩn cấp.'],
+        ['Maintenance','y','Trạng thái','Chế độ lập trình.'],
+        ['Operating Power','g','Trạng thái','Có nguồn cung cấp.']
+      ]},
+      {p:'Tài liệu chỉ ghi rõ màu đèn Fire Alarm. Đối chiếu tủ thực tế.'}
+    ]},
+    {k:'nut', t:'Nút nhấn', b:[
+      {keys:[
+        ['BUZ','Tắt còi bíp trên tủ.'],
+        ['Silence','Tắt chuông còi ngoài.'],
+        ['Reset','Đưa tủ về ban đầu.'],
+        ['Evac','Kích hoạt thiết bị sơ tán khẩn cấp.'],
+        ['Fire-alarm','Xem các thiết bị đang báo cháy.'],
+        ['Pre-alarm','Xem các thiết bị sắp báo cháy.'],
+        ['Fault','Xem các lỗi.'],
+        ['Supervisory','Xem các thiết bị giám sát.'],
+        ['Activation','Xem các thiết bị đã kích hoạt.']
+      ]},
+      {p:'Các nút còn lại là phím chữ số và phím mũi tên.'}
+    ]}
+  ]
+},
+{
+  id:'yunyang-yfr1', name:'Yunyang YFR-1', brand:'Yunyang', type:'dc',
+  desc:'Tủ báo cháy Yunyang dòng YFR-1, hiện thiết bị báo cháy.',
+  quick:{panel:'[[Buzzer]]', bell:'[[Gate]]', reset:'[[Reset]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire sáng, tủ hiện đầu báo hoặc nút nhấn khẩn đang báo. Chuông trên bo mạch và chuông ngoài kêu.'},
+      {steps:[
+        'Xem thiết bị đang báo, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Nhấn [[Buzzer]] để tắt chuông trên tủ.',
+        'Khi được phép: nhấn [[Gate]] để tắt chuông ngoài.',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]].'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['Fire','r','Đỏ','Đang có cháy.'],
+        ['AC','g','Trạng thái','Nguồn điện lưới.'],
+        ['Standby','o','Trạng thái','Nguồn ắc quy.']
+      ]},
+      {keys:[
+        ['Reset','Reset hệ thống.'],
+        ['Buzzer','Tắt chuông trên tủ.'],
+        ['Gate','Tắt chuông ngoài.']
+      ]}
+    ]}
+  ]
+},
+{
+  id:'yunyang-yf1', name:'Yunyang YF-1', brand:'Yunyang', type:'th',
+  desc:'Tủ thường theo zone. Tắt chuông bằng công tắc gạt về Stop.',
+  quick:{panel:'Gạt [[Main sounder]] về Stop', bell:'Gạt [[Warn sounder]] về Stop', reset:'[[Reset]]', pass:'Không cần'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire sáng, đèn zone có cháy sáng. Chuông trên bo mạch và chuông ngoài kêu.'},
+      {steps:[
+        'Đọc zone đang sáng, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Tắt chuông tủ: gạt công tắc [[Main sounder]] về <b>Stop</b>.',
+        'Khi được phép: gạt [[Warn sounder]] về <b>Stop</b> để tắt chuông ngoài, gạt [[Transfer Report]] về <b>Stop</b> để tắt còi ngoài.',
+        'Xử lý xong nguyên nhân thì nhấn [[Reset]].',
+        'Gạt các công tắc về lại vị trí cũ. Nếu quên, lần cháy sau chuông sẽ không kêu.'
+      ]},
+      {warn:'<b>Reset không tác dụng</b>Đầu báo còn khói hoặc nút nhấn khẩn chưa phục hồi. Xử lý thiết bị trước rồi mới Reset.'}
+    ]},
+    {k:'den', t:'Đèn và nút', b:[
+      {leds:[
+        ['Fire','r','Đỏ','Đang có cháy.'],
+        ['Zone','r','Theo zone','Khu vực báo cháy.'],
+        ['AC','g','Trạng thái','Nguồn điện lưới.'],
+        ['Standby','o','Trạng thái','Nguồn ắc quy.'],
+        ['Disconnect','y','Báo lỗi','Lỗi kết nối đường dây.']
+      ]},
+      {keys:[
+        ['Reset','Reset hệ thống.'],
+        ['Auto Reset','Tự động reset hệ thống.'],
+        ['Main sounder','Công tắc tắt chuông trên tủ.'],
+        ['Warn sounder','Công tắc tắt chuông ngoài.'],
+        ['Transfer Report','Công tắc tắt còi ngoài.'],
+        ['Accumulation','Tắt chức năng chống báo giả.']
+      ]}
+    ]}
+  ]
+},
+{
+  id:'networx', name:'NetworX', brand:'NetworX', type:'bd',
+  desc:'Trung tâm báo cháy và báo trộm, thao tác trên bàn phím. Mã mặc định trong tài liệu là 1234.',
+  quick:{panel:'Tài liệu không ghi', bell:'Tài liệu không ghi', reset:'Bấm `1 2 3 4 * 7`', pass:'`1234`'},
+  tabs:[
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Bình thường</b>Đèn Power và Ready sáng.'},
+      {info:'<b>Nhận biết cháy</b>Đèn Fire sáng, đèn Armed chớp, loa bàn phím kêu bíp bíp, đèn zone khu vực cháy chớp.'},
+      {steps:[
+        'Đọc zone đang chớp, cử người kiểm tra. Cháy thật: di tản, gọi 114, chữa cháy.',
+        'Xử lý xong nguyên nhân: bấm lần lượt `1 2 3 4 * 7` để reset.'
+      ]},
+      {p:'Mã `1234` là mã trong tài liệu. Công trình có thể đã đổi.'}
+    ]},
+    {k:'den', t:'Đèn báo', b:[
+      {leds:[
+        ['Ready','g','Xanh','Hệ thống bình thường.'],
+        ['Power','r','Đỏ','Đủ nguồn. Chớp: ắc quy yếu. Tắt: mất nguồn ắc quy.'],
+        ['Service','y','Vàng','Hệ thống bị lỗi.'],
+        ['Armed','r','Đỏ','Sáng: đã bật canh trộm. Chớp: đang báo động.'],
+        ['Instant','r','Đỏ','Hệ thống bị lỗi (theo tài liệu).'],
+        ['Fire','r','Đỏ','Sáng: có cháy. Chớp: hệ thống có lỗi.'],
+        ['Zones','y','Vàng chớp','Khu vực đang báo.'],
+        ['Stay / Bypass','g','Xanh chớp','Có zone đang bị bỏ qua (bypass).'],
+        ['Chime / Exit / Cancel','g','Xanh chớp','Chức năng tương ứng đang bật.']
+      ]}
+    ]},
+    {k:'nut', t:'Thao tác bàn phím', b:[
+      {table:{head:['Việc cần làm','Bấm'], rows:[
+        ['Reset sau báo cháy','`1 2 3 4 * 7`'],
+        ['Bật canh trộm (Armed)','`1 2 3 4`'],
+        ['Tắt canh trộm (Disarmed)','`1 2 3 4`'],
+        ['Chỉnh âm lượng loa bàn phím','`* 0`, sau đó `1` để tăng, `2` để giảm'],
+        ['Thử chuông (không cần thử khói)','`* 4`']
+      ]}}
+    ]}
+  ]
+},
+{
+  id:'chuango-a8', name:'Chuango CG-A8', brand:'Chuango', type:'bd',
+  desc:'Trung tâm báo động không dây, dùng remote và điện thoại bàn. Kết nối tối đa 60 thiết bị.',
+  quick:{panel:'Remote [[Disarm]]', bell:'Gọi vào, bấm `6`', reset:'Remote [[Disarm]] lần 2 (tắt đèn sự kiện)', pass:'`1234`'},
+  tabs:[
+    {k:'chay', t:'Khi báo động', b:[
+      {steps:[
+        'Các đèn zone chớp, còi kêu. Cử người kiểm tra khu vực.',
+        'Nhấn [[Disarm]] trên remote một lần để tắt còi.',
+        'Nhấn [[Disarm]] lần nữa để tắt các đèn sự kiện.'
+      ]},
+      {p:'Nút [[SOS]] trên remote: báo động ngay và gọi các số điện thoại đã cài.'}
+    ]},
+    {k:'nut', t:'Remote và điện thoại', b:[
+      {keys:[
+        ['Arm','Bật canh báo động. Tủ kêu 1 tiếng bíp, đèn Arm sáng.'],
+        ['Disarm','Tắt canh báo động, tắt còi.'],
+        ['SOS','Báo động ngay, gọi số điện thoại đã cài.']
+      ]},
+      {h:'Điều khiển bằng điện thoại'},
+      {p:'Gọi đến trung tâm, chờ khoảng 30 giây, nhập mật khẩu (mặc định `1234`) rồi bấm `#`. Sai mật khẩu, trung tâm ngắt máy.'},
+      {table:{head:['Bấm','Để'], rows:[
+        ['`1`','Bật canh báo động (1 tiếng bíp)'],['`0`','Tắt canh báo động (2 tiếng bíp)'],['`9`','Bật còi khẩn cấp'],['`6`','Tắt còi đang kêu'],['`*`','Nghe âm thanh tại chỗ'],['`#`','Thoát']
+      ]}}
+    ]},
+    {k:'cai', t:'Cài đặt', b:[
+      {warn:'<b>Dành cho kỹ thuật</b>Cài sai có thể làm trung tâm không gọi báo khi có sự cố.'},
+      {dots:[
+        '<b>Thêm thiết bị:</b> nhấn nút Connect (đèn sáng trắng), rồi kích hoạt thiết bị. Tối đa 60 thiết bị.',
+        '<b>Xóa hết thiết bị:</b> giữ nút Record đến khi nghe 2 tiếng bíp.',
+        '<b>Vào cài đặt:</b> cắm điện thoại bàn vào trung tâm, giữ nút Setup khoảng 3 giây đến khi đèn sáng trắng. Giữ 3 giây lần nữa để thoát.',
+        'Lệnh đúng: 1 tiếng bíp. Lệnh sai: 3 tiếng bíp và 1 tiếng dài, làm lại.'
+      ]},
+      {table:{head:['Chức năng','Lệnh','Mặc định'], rows:[
+        ['Thời gian còi kêu (1-9 phút)','`*1*n*`','5 phút'],
+        ['Thời gian trễ (0-300 giây)','`*2*n*`','0 giây'],
+        ['Cho phép điều khiển bằng điện thoại','`*3*8*` (cấm: `*3**`)','Không cho phép'],
+        ['Đổi mật khẩu (4-6 số)','`*9*mật khẩu mới*`','1234'],
+        ['Về cài đặt gốc','`*0**`',''],
+        ['Cài số điện thoại thứ n (1-8)','`#n#số điện thoại#`',''],
+        ['Xóa số thứ n / xóa tất cả','`#n##` / `#0##`','']
+      ]}}
+    ]}
+  ]
+},
+{
+  id:'chuango-g3', name:'Chuango G3', brand:'Chuango', type:'bd',
+  desc:'Trung tâm báo động không dây dùng SIM, điều khiển bằng remote, cuộc gọi và tin nhắn. Kết nối tối đa 60 thiết bị.',
+  quick:{panel:'Remote [[Disarm]]', bell:'Nhắn `0` đến số trung tâm', reset:'Không cần', pass:'Không ghi'},
+  tabs:[
+    {k:'chay', t:'Khi báo động', b:[
+      {steps:[
+        'Trung tâm gọi đến điện thoại: nghe máy để nghe âm thanh tại chỗ, rồi gác máy.',
+        'Tắt báo động, tắt còi: nhấn [[Disarm]] trên remote. Hoặc nhắn tin `0` đến số trung tâm. Hoặc gọi đến trung tâm, để đổ chuông đến khi trung tâm tự ngắt.',
+        'Cử người kiểm tra khu vực báo động.'
+      ]},
+      {p:'Nút [[SOS]] trên remote: báo động ngay và gọi các số điện thoại đã cài.'}
+    ]},
+    {k:'nut', t:'Remote và tin nhắn', b:[
+      {keys:[
+        ['Arm','Bật canh báo động. Tủ kêu 1 tiếng bíp, đèn Arm sáng.'],
+        ['Disarm','Tắt canh báo động.'],
+        ['SOS','Báo động ngay, gọi số điện thoại đã cài.']
+      ]},
+      {table:{head:['Nhắn tin đến số trung tâm','Để'], rows:[
+        ['`0`','Tắt canh báo động, tắt còi'],
+        ['`1`','Bật canh báo động (trung tâm gọi lại xác nhận)'],
+        ['`2`','Trung tâm gọi lại để nghe âm thanh tại chỗ'],
+        ['`3`','Cài số điện thoại nhận báo (tối đa 5 số)'],
+        ['`4`','Đặt tên khu vực (ví dụ: Nha Bep, Phong Khach)'],
+        ['`6`','Chỉnh âm lượng còi (0 tắt, 1 nhỏ, 2 vừa, 3 to) và thời gian kêu 1-9 phút']
+      ]}},
+      {p:'Với lệnh 3, 4, 6: trung tâm nhắn lại mẫu. Sửa nội dung trong mẫu rồi gửi lại. Thành công sẽ nhận tin báo "successfully".'}
+    ]},
+    {k:'cai', t:'Cài đặt', b:[
+      {dots:[
+        '<b>Gắn SIM:</b> tắt trung tâm, gắn SIM vào khe, bật lại.',
+        '<b>Thêm thiết bị:</b> nhấn nút Connect (đèn chớp đỏ), rồi kích hoạt thiết bị. Tối đa 60 thiết bị.',
+        '<b>Xóa hết thiết bị:</b> giữ đồng thời Connect và SOS đến khi nghe 3 tiếng bíp.'
+      ]}
+    ]}
+  ]
 }
 ];
 
@@ -604,7 +1406,8 @@ function fmt(s){
     .replace(/`([^`]+)`/g,'<code>$1</code>');
 }
 function plain(s){return String(s).replace(/<[^>]+>/g,' ').replace(/\[\[|\]\]|`/g,'')}
-function tag(p){return p.type==='dc'?'<span class="tag dc">Địa chỉ</span>':'<span class="tag th">Thường</span>'}
+var TAGS = {dc:'Địa chỉ', th:'Thường', xk:'Xả khí', bd:'Báo động'};
+function tag(p){return '<span class="tag '+p.type+'">'+TAGS[p.type]+'</span>'}
 
 function block(b){
   if(b.steps) return '<ol class="steps">'+b.steps.map(function(s){return '<li><div>'+fmt(s)+'</div></li>'}).join('')+'</ol>';
@@ -640,7 +1443,7 @@ function home(){
     '<div class="call"><a href="tel:114">Gọi 114</a></div></section>'+
   '<div class="search"><input id="q" type="search" placeholder="Tìm tủ: EST3, Horing, Dahua..." aria-label="Tìm tủ" autocomplete="off"></div>'+
   '<div class="chips" role="group" aria-label="Lọc loại tủ">'+
-    '<button class="chip" data-f="all">Tất cả</button><button class="chip" data-f="dc">Tủ địa chỉ</button><button class="chip" data-f="th">Tủ thường</button></div>'+
+    '<button class="chip" data-f="all">Tất cả</button><button class="chip" data-f="dc">Tủ địa chỉ</button><button class="chip" data-f="th">Tủ thường</button><button class="chip" data-f="xk">Tủ xả khí</button><button class="chip" data-f="bd">Báo động</button></div>'+
   '<div class="list" id="list"></div>'+
   '<section class="card"><h2>Tra nhanh 4 thao tác</h2><div class="tw"><table class="quick"><thead><tr><th>Tủ</th><th>Tắt còi tủ</th><th>Tắt chuông ngoài</th><th>Reset</th><th>Mật khẩu / quyền</th></tr></thead><tbody id="qt"></tbody></table></div>'+
   '<p class="sub">Mật khẩu là mặc định của hãng. Công trình có thể đã đổi.</p></section>'+
