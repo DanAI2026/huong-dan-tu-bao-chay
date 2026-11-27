@@ -304,7 +304,7 @@ var PANELS = [
 {
   id:'simplex-4100es', name:'Simplex 4100ES', brand:'Simplex', type:'dc',
   desc:'Tủ địa chỉ, vòng thiết bị MAPNET II hoặc IDNet. Màn hình 2 dòng, bàn phím số bên phải, các nút trên tủ có dán số 1-7 theo thứ tự xử lý báo nhầm.',
-  quick:{panel:'[[Fire Alarm Ack]]', bell:'[[Alarm Silence]]', reset:'[[System Reset]]', pass:'Chưa có, hỏi đơn vị bảo trì'},
+  quick:{panel:'[[Fire Alarm Ack]]', bell:'[[Alarm Silence]]', reset:'[[System Reset]]', pass:'Thử cấp 2 `222`, cấp 3 `333`; không được thì `2000`, `3000` (mã mặc định, có thể đã bị đổi)'},
   tabs:[
     {k:'so', t:'Bấm theo số', b:[
       {img:'simplex-4100es.jpg', cap:'Các nút đã đánh số trên tủ. Số 4 là phím [[Enter]] ở bàn phím số bên phải, không có trong ảnh.'},
@@ -351,6 +351,13 @@ var PANELS = [
       {info:'<b>Mất điện lưới</b>Đèn AC Power tắt, đèn Trouble sáng. Kiểm tra cầu dao cấp nguồn cho tủ. Ắc quy chỉ giữ được trong thời gian giới hạn.'}
     ]},
     {k:'cl', t:'Cô lập thiết bị', b:[
+      {h:'Đăng nhập (khi tủ hỏi mật khẩu)'},
+      {steps:[
+        'Nhấn [[Menu]], chọn mục <b>Access</b>, nhấn [[Enter]].',
+        'Chọn <b>Login</b>, nhấn [[Enter]].',
+        'Nhập mật khẩu trên bàn phím số rồi nhấn [[Enter]]. Thử cấp 2 `222`, cấp 3 `333`. Không được thì thử `2000`, `3000`.'
+      ]},
+      {warn:'<b>Lưu ý mật khẩu</b>Đây là mã mặc định theo tài liệu hãng, đơn vị lắp đặt có thể đã đổi. Sai 3 lần tủ báo ACCESS DENIED. Báo cháy, tắt chuông, reset không cần mật khẩu. Tủ tự thoát về cấp 1 sau 10 phút không bấm phím.'},
       {stop:'<b>Rủi ro cao</b>Thiết bị bị Disable sẽ không báo cháy về tủ, đèn Trouble sáng để nhắc. Phải ghi sổ, báo người phụ trách và Enable lại ngay khi sửa xong.'},
       {h:'Cô lập'},
       {steps:[
