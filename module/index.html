@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Sơ đồ đấu nối module báo cháy địa chỉ các hãng: GST, Notifier, Edwards EST, Simplex, Siemens, Bosch, Hochiki, Nittan, Dahua.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Module báo cháy">
+<meta name="theme-color" content="#1d2328">
+<title>Module báo cháy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+<style>
+/* Cùng kiểu app Tủ báo cháy: một cột hẹp đọc trên điện thoại. Trang chủ: tìm module theo hãng. Trang module: sơ đồ đấu dây + thông số. */
+:root{
+  --bg:#eef0f1; --panel:#ffffff; --ink:#1d2328; --muted:#5d6872; --line:#d5dade; --chip:#f3f5f6;
+  --accent:#c8201e; --accent-ink:#ffffff; --accent-soft:#fbe9e8;
+  --warn:#9a5600; --warn-soft:#fff4e0; --ok:#1f7a4a; --ok-soft:#e5f4ec;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#13171a; --panel:#1c2226; --ink:#e9ecee; --muted:#9aa6af; --line:#2d363c; --chip:#242b30;
+  --accent:#ff5a4f; --accent-ink:#1a0505; --accent-soft:#3a1c1b;
+  --warn:#f0a33a; --warn-soft:#33270f; --ok:#4fc487; --ok-soft:#173226; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#13171a; --panel:#1c2226; --ink:#e9ecee; --muted:#9aa6af; --line:#2d363c; --chip:#242b30;
+  --accent:#ff5a4f; --accent-ink:#1a0505; --accent-soft:#3a1c1b;
+  --warn:#f0a33a; --warn-soft:#33270f; --ok:#4fc487; --ok-soft:#173226; color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 40px}
+.wrap{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.02;margin:0;text-transform:uppercase;letter-spacing:.01em;text-wrap:balance}
+h1 span{color:var(--accent)}
+h2{font-family:var(--f-display);font-weight:700;font-size:20px;text-transform:uppercase;letter-spacing:.04em;margin:0}
+h3{font-size:15px;margin:0;font-weight:700}
+.sub{color:var(--muted);font-size:13px;margin:4px 0 0}
+button{font:inherit;color:inherit}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+a{color:var(--accent)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.search input{width:100%;height:46px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit;font-size:16px;padding:0 14px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:14px;font-weight:500;min-height:38px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list{display:flex;flex-direction:column;gap:8px}
+.grp{font-family:var(--f-display);font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:8px 2px 0}
+.item{appearance:none;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;min-height:56px}
+.item:hover{border-color:var(--muted)}
+.item b{font-family:var(--f-display);font-size:21px;letter-spacing:.02em;line-height:1.1}
+.item small{color:var(--muted);font-size:13px;grid-column:1}
+.item .tag{grid-row:1/3;grid-column:2}
+.tag{font-size:12px;font-weight:600;border-radius:6px;padding:3px 8px;white-space:nowrap}
+.t-in{background:var(--ok-soft);color:var(--ok)}
+.t-out{background:var(--accent-soft);color:var(--accent)}
+.t-io{background:var(--warn-soft);color:var(--warn)}
+.t-x{background:var(--chip);color:var(--muted);border:1px solid var(--line)}
+.empty{color:var(--muted);text-align:center;padding:14px}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:8px 6px;border-bottom:1px solid var(--line)}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+td:first-child{font-weight:600;white-space:nowrap}
+.top{display:flex;align-items:center;gap:10px}
+.back{appearance:none;border:1px solid var(--line);background:var(--panel);border-radius:10px;min-width:44px;height:44px;cursor:pointer;font-size:20px;line-height:1}
+.brandline{color:var(--muted);font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.sheet{background:#fff;border:1px solid #cfd4d8;border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.sheet svg{display:block;width:100%;height:auto}
+.bigb{appearance:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);border-radius:10px;min-height:44px;font-weight:600;cursor:pointer}
+.full{position:fixed;inset:0;background:#fff;z-index:20;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.full svg{flex:none;width:96vw;height:auto}
+@media (orientation:portrait){.full svg{width:94vh;transform:rotate(90deg)}}
+.full .x{position:absolute;top:max(12px,env(safe-area-inset-top));right:12px;appearance:none;border:1px solid #1d2328;background:#1d2328;color:#fff;border-radius:10px;min-width:44px;height:44px;font-size:15px;font-weight:600;padding:0 12px;cursor:pointer}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px;color:var(--muted)}
+.legend span::before{content:"";display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px;background:var(--c)}
+.box{border-radius:10px;padding:10px 12px;font-size:14px}
+.box b{display:block;margin-bottom:2px}
+.warn{background:var(--warn-soft);color:var(--ink);border-left:4px solid var(--warn)}
+.okb{background:var(--ok-soft);border-left:4px solid var(--ok)}
+.stop{background:var(--accent-soft);border-left:4px solid var(--accent)}
+ul.dots{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.kv{display:grid;grid-template-columns:minmax(0,9.5em) minmax(0,1fr);gap:6px 12px;font-size:14px}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-weight:500}
+code{background:var(--chip);border:1px solid var(--line);border-radius:5px;padding:0 5px;font-size:13px}
+.install{display:flex;gap:10px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:14px}
+.install span{flex:1}
+.install-b{appearance:none;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;border-radius:8px;padding:8px 14px;cursor:pointer}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:10px;line-height:1.7}
+footer .offline.ok{color:var(--ok)}
+svg text{font-family:"Be Vietnam Pro",Arial,sans-serif;font-size:12px;fill:#1a1a1a}
+svg .b{font-weight:700;font-size:14px}svg .s{font-size:11px}svg .g{fill:#5d6872}svg .rd{fill:#d0021b}svg .bl{fill:#1f5fd1}
+svg .w{fill:none;stroke-width:2.4;stroke-linejoin:round}
+svg .wp{stroke:#d0021b}svg .wn{stroke:#1f5fd1}svg .wl{stroke:#6a6a6a}svg .wc{stroke:#0a7a3d}svg .wf{stroke:#c46a00}svg .wk{stroke:#222}
+svg .m{fill:#f3f3f3;stroke:#222;stroke-width:1.5}svg .d{fill:#fff;stroke:#222;stroke-width:1.4}
+svg .t{fill:#fff;stroke:#222;stroke-width:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="install" id="install" hidden><span id="install-t">Cài "Module báo cháy" lên màn hình chính để mở nhanh và dùng không cần mạng.</span><button class="install-b" id="install-b" type="button" hidden>Cài</button></div>
+  <main id="app"></main>
+  <footer>
+    Sơ đồ tóm tắt từ tài liệu lắp đặt của hãng. Số cọc in trên module là căn cứ cuối cùng.<br>
+    Ngắt nguồn loop trước khi đấu. Việc đấu nối, lập trình do kỹ thuật viên thực hiện.<br>
+    <b>Công ty TNHH Công Nghệ UTC</b> · Hotline <a href="tel:0931188114">093 11 88 114</a> · <a href="../">App Tủ báo cháy</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ===== Dữ liệu module =====
+   top: cọc phía trên sơ đồ, theo thứ tự trái sang phải.
+        t = tên cọc, r = 'L' (đi về nguồn bên trái) | 'R' (đi ra thiết bị bên phải) | '' (bỏ trống),
+        c = màu dây: p đỏ (+), n xanh (−), c xanh lá (tiếp điểm), f cam (ngõ vào), k đen.
+        Cọc 'L' phải nằm bên trái các cọc 'R'.
+   grp: nhóm thiết bị bên phải, mỗi nhóm nhận 2 dây 'R' liên tiếp.
+        k = in (tiếp điểm thường mở, điện trở song song cuối dây) | nc (thường đóng, điện trở nối tiếp)
+            | ctl (ngõ điều khiển, không điện trở) | chain (nhiều thiết bị song song + điện trở cuối)
+        eol = điện trở cuối, act = điện trở kích (nối tiếp tiếp điểm), devs = tên thiết bị trong chuỗi.
+   loop: {i:[2 cọc loop vào], o:[2 cọc loop ra] hoặc null, pol:true nếu phân cực}
+   lv: 'A' tên cọc theo tài liệu hãng; 'B' tên cọc ghi theo chức năng, đọc nhãn module khi đấu. */
+var BRANDS = [
+ {id:'gst', n:'GST', d:'Dòng E (DI-93xxE, chuẩn EN54) và dòng M (DI-M93xx, chuẩn UL). Theo tài liệu hãng, dòng M dùng cho tủ GST-M200, GST-IFP4M. Lập trình bằng máy P-9910B: nhập 456, bấm Clear để mở khóa.'},
+ {id:'notifier', n:'Notifier', d:'Module FlashScan của Honeywell Notifier dùng cho tủ NFS. Địa chỉ đặt bằng 2 núm xoay hàng chục, hàng đơn vị. Điện trở cuối tuyến chủ yếu 47kΩ.'},
+ {id:'est', n:'Edwards EST', d:'Module Signature (SIGA) dùng với tủ EST3, EST3X, iO. Module tự nhận địa chỉ, không có núm xoay. Chức năng chọn bằng mã cá tính (personality code) khi lập trình.'},
+ {id:'simplex', n:'Simplex', d:'Module IDNet dùng với tủ 4007ES, 4010ES, 4100ES. Địa chỉ đặt bằng công tắc DIP 8 nấc dưới nhãn dán, nấc 1 là bit nhỏ nhất.'},
+ {id:'siemens', n:'Siemens', d:'Module Cerberus PRO (FDnet/C-NET) gắn thanh ray DIN, có cách ly tích hợp. Dòng FDCIO422 dùng cho hệ chuẩn UL.'},
+ {id:'bosch', n:'Bosch', d:'Module FLM-420 trên loop LSN của tủ AVENAR, FPA-5000. Có cách ly tích hợp.'},
+ {id:'hochiki', n:'Hochiki', d:'Module CHQ dùng giao thức ESP (Hochiki Europe). Địa chỉ đặt bằng máy lập trình TCH-B100. Ngõ vào giám sát dùng điện trở cuối 10kΩ và điện trở kích 470Ω.'},
+ {id:'nittan', n:'Nittan', d:'Module Evolution (EV-) có cách ly tích hợp. Địa chỉ ghi bằng dây lập trình địa chỉ EV.'},
+ {id:'dahua', n:'Dahua', d:'Module địa chỉ dòng HY. Loop 2 dây không phân cực, địa chỉ 1 đến 254 đặt bằng máy mã hóa.'},
+ {id:'khac', n:'Horing, Tanda, Yunyang', d:'Em chưa tìm được tài liệu lắp đặt module công khai của các hãng này. Anh gửi catalogue hoặc ảnh nhãn module, em bổ sung vào app.'}
+];
+
+var LIN = {k:'in', l:'Thiết bị có tiếp điểm thường mở'};
+var M = [
+/* ---------- GST ---------- */
+{id:'gst-9300', b:'gst', code:'DI-9300E / DI-M9300', name:'Module giám sát 1 ngõ vào', type:'in', lv:'A',
+ use:'Công tắc dòng chảy, van giám sát, công tắc áp lực, tín hiệu chạy bơm.',
+ top:[{t:'I',r:'R',c:'f'},{t:'G',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'4,7kΩ'}],
+ loop:{i:['Z1','Z2'],o:['Z1','Z2']},
+ kv:[['Điện trở cuối','4,7kΩ (kèm module)'],['Loop','Z1, Z2 không phân cực'],['Cài đặt','Fn + 3: nhập 1 là thường đóng, số khác là thường mở']],
+ notes:['Tiếp điểm thường đóng: đấu điện trở 4,7kΩ NỐI TIẾP với tiếp điểm, cài thường đóng.','Đo ở I–G: dưới 1kΩ là tác động, trên 11,7kΩ là lỗi đứt dây (chế độ thường mở).'],
+ src:'https://manuals.online/gst/control-unit/di-9300e/user-manual/1lnko'},
+{id:'gst-9301', b:'gst', code:'DI-9301E / DI-M9301', name:'Module vào/ra 1 ngõ', type:'io', lv:'A',
+ use:'Điều khiển còi đèn 24V, quạt, van, cửa cuốn (qua rơ-le trung gian), có nhận phản hồi.',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'NC',r:''},{t:'I',r:'R',c:'f'},{t:'G',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm phản hồi',eol:'4,7kΩ'}],
+ loop:{i:['Z1','Z2'],o:['Z1','Z2']},
+ kv:[['Tiếp điểm','2A ở 30VDC'],['Điện trở cuối','4,7kΩ ở ngõ phản hồi'],['Cài đặt DI-M9301','Fn + 3: 1 tự phản hồi, 2 thường đóng, số khác thường mở'],['Cài đặt DI-9301E','Fn + 3: 1 tự phản hồi không giám sát ra; 11 tự phản hồi có giám sát; số khác thường mở có giám sát']],
+ notes:['Điều khiển còi đèn 24V: +24V vào COM, NO ra cực + còi, 0V nối thẳng cực − còi.','Không có tiếp điểm phản hồi: gắn 4,7kΩ ở I–G và cài tự phản hồi để tủ hiện trạng thái đã chạy.','DI-9301E có 30kΩ giữa NO và COM, không hợp với mạch điều khiển dòng rất nhỏ.'],
+ src:'https://manuals.online/gst/i%2Fo-system/di-m9301/user-manual/1moah'},
+{id:'gst-9302', b:'gst', code:'DI-9302E', name:'Module rơ-le điện áp cao, 2 bộ tiếp điểm', type:'out', lv:'A',
+ use:'Ra lệnh khởi động tủ quạt, tủ bơm.',
+ top:[{t:'COM1',r:'R',c:'c'},{t:'NO1',r:'R',c:'c'},{t:'NC1',r:''},{t:'COM2',r:''},{t:'NO2',r:''},{t:'NC2',r:''},{t:'I',r:'R',c:'f'},{t:'G',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Tủ quạt / bơm',d:'Ngõ lệnh khởi động'},{k:'in',l:'Tiếp điểm phụ khởi động từ',eol:'4,7kΩ'}],
+ loop:{i:['Z1','Z2'],o:['Z1','Z2']},
+ kv:[['Tiếp điểm','220VAC / 5A theo tài liệu'],['Điện trở cuối','4,7kΩ ở ngõ phản hồi'],['Cài đặt','Fn + 3: 11 tự phản hồi, 13 thường mở (1 địa chỉ); 23 thường mở 2 địa chỉ']],
+ warn:'Tài liệu cũng có câu "chỉ dùng không quá 30VDC hoặc AC", mâu thuẫn với định mức 220VAC. Hỏi lại nhà phân phối trước khi đấu thẳng 220VAC.',
+ notes:['Bộ tiếp điểm 2 (COM2, NO2, NC2) dùng cho thiết bị thứ hai.','Cửa chống cháy, thang máy: đấu qua rơ-le trung gian. Không dùng cho hệ chữa cháy khí.'],
+ src:'https://manuals.online/gst/relay/di-9302e/user-manual/nv89'},
+{id:'gst-9305', b:'gst', code:'DI-9305E / DI-M9305', name:'Module cấp nguồn 24V cho dãy còi đèn', type:'out', lv:'A',
+ use:'Cấp nguồn có giám sát cho nhiều còi, đèn chớp đấu song song.',
+ pwr:'Nguồn 24VDC (tủ hoặc bộ nguồn phụ)',
+ top:[{t:'I1',r:'L',c:'k',lab:'Nguồn'},{t:'I2',r:'L',c:'k',lab:'Nguồn'},{t:'O1',r:'R',c:'p'},{t:'O2',r:'R',c:'n'}],
+ grp:[{k:'chain',l:'Còi đèn đấu song song',devs:['Còi 1','Còi N'],eol:'47kΩ'}],
+ loop:{i:['Z1','Z2'],o:['Z1','Z2']},
+ kv:[['Tải tối đa','2A ở 30VDC'],['Điện trở cuối','47kΩ ở còi cuối'],['Báo lỗi nguồn','Dưới 18V (DI-9305E)']],
+ warn:'Tài liệu không ghi cọc nào là cực +. Đọc nhãn trên đế module, đấu đúng cực + của còi đèn.',
+ src:'https://manuals.online/gst/i%2Fo-system/di-m9305/user-manual/1jywo'},
+{id:'gst-9319', b:'gst', code:'DI-9319E', name:'Module giám sát vùng đầu báo thường', type:'in', lv:'A',
+ use:'Gom một vùng đầu báo thường (tối đa 30 thiết bị) vào loop địa chỉ.',
+ pwr:'Nguồn 24VDC (20–28V)',
+ top:[{t:'V',r:'L',c:'p',lab:'+24V'},{t:'G',r:'L',c:'n',lab:'0V'},{t:'I',r:'R',c:'f'},{t:'G',r:'R',c:'f'}],
+ grp:[{k:'chain',l:'Đầu báo thường đấu song song',devs:['ĐB 1','ĐB N'],eol:'4,7kΩ'}],
+ loop:{i:['Z1','Z2'],o:['Z1','Z2']},
+ kv:[['Điện trở cuối','4,7kΩ ở đế cuối'],['Số thiết bị','Tối đa 30'],['Đo ở I–G','0–100Ω chập; 110Ω–1,4kΩ báo cháy; 1,5–10kΩ bình thường; trên 11kΩ đứt']],
+ notes:['COM, NO, NC: tiếp điểm khô đổi theo ngõ vào, 2A ở 30VDC.','Cọc E: nối đất cáp nếu nguồn 24V không có kiểm tra dây.'],
+ src:'https://www.hitsec.ru/upload/iblock/ab2/ab2e303df869e414098033169560539b.pdf'},
+{id:'gst-9503', b:'gst', code:'DC-9503E', name:'Module cách ly loop', type:'x', lv:'A',
+ use:'Chia loop thành từng đoạn, đoạn bị chập tự tách ra.',
+ top:[], grp:[], loop:{i:['I+','I−'],o:['O+','O−'],pol:true},
+ kv:[['Dòng liên tục','1A'],['Sức chứa','Tối đa 70 thiết bị (tài liệu không ghi rõ cho mỗi đoạn)']],
+ warn:'Module này CÓ PHÂN CỰC: dây + vào I+, ra O+; dây − vào I−, ra O−.',
+ src:'https://armosystems.ru/upload/iblock/78c/5ln6qv7eor1nnp7mosgsjq4m0ug5ctx3.pdf'},
+
+/* ---------- Notifier ---------- */
+{id:'nf-fmm1', b:'notifier', code:'FMM-1', name:'Module giám sát (Monitor)', type:'in', lv:'B',
+ use:'Công tắc dòng chảy, van giám sát, nút ấn, tín hiệu thiết bị khác.',
+ top:[{t:'IDC +',r:'R',c:'f'},{t:'IDC −',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'47kΩ'}],
+ loop:{i:['SLC +','SLC −'],o:null},
+ kv:[['Điện trở cuối','47kΩ (ELR-47K, kèm module)'],['Điện trở dây IDC','Tối đa 1.500Ω'],['Điện áp loop','15–32VDC'],['Địa chỉ','2 núm xoay: hàng chục, hàng đơn vị']],
+ src:'https://parcelsfolder.portlandmaine.gov/Files/114A/114A%20A001/Fire%20Permits/Fire%20Prevention/Fire%20Prevention%20-%20Payson%20Smith/2013-01409%20Fire%20Alarm%20System/2.%20Documents/(FMM)%20Addressable%20Monitor%20Module.pdf'},
+{id:'nf-fmm101', b:'notifier', code:'FMM-101', name:'Module giám sát loại nhỏ (Mini monitor)', type:'in', lv:'B',
+ use:'Gắn trong hộp thiết bị, giám sát một tiếp điểm.',
+ top:[{t:'Dây tím',r:'R',c:'f'},{t:'Dây vàng',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'47kΩ'}],
+ loop:{i:['Dây đỏ','Dây đen'],o:null},
+ kv:[['Điện trở cuối','47kΩ (ELR-47K, kèm module)'],['Đấu dây','Dây đỏ, đen: loop SLC. Dây tím, vàng: ngõ vào']],
+ warn:'Màu dây đọc theo hình trong tài liệu, cực tính từng dây xem lại nhãn module trước khi đấu.',
+ src:'https://prod-edam.honeywell.com/content/dam/honeywell-edam/hbt/en-us/documents/manuals-and-guides/repair-and-maintenance-guides/hon-ba-fire-fmm-101-monitor-module.pdf'},
+{id:'nf-fcm1', b:'notifier', code:'FCM-1', name:'Module điều khiển còi đèn, loa (NAC)', type:'out', lv:'B',
+ use:'Cấp nguồn 24V có giám sát cho dãy còi đèn, hoặc chuyển mạch loa.',
+ pwr:'Nguồn 24VDC ngoài (cọc T10, T11)',
+ top:[{t:'T10',r:'L',c:'p',lab:'+24V'},{t:'T11',r:'L',c:'n',lab:'0V'},{t:'NAC +',r:'R',c:'p'},{t:'NAC −',r:'R',c:'n'}],
+ grp:[{k:'chain',l:'Còi đèn đấu song song',devs:['Còi 1','Còi N'],eol:'47kΩ'}],
+ loop:{i:['SLC +','SLC −'],o:null},
+ kv:[['Dòng NAC','Tối đa 3A (Class B), 2A (Class A)'],['Sụt áp NAC','Tối đa 4VDC'],['Điện trở cuối','47kΩ (ELR-47K)'],['Loa','70,7V RMS, tối đa 50W']],
+ notes:['Class B: lắp 47kΩ ở thiết bị cuối, không đấu dây quay về T8/T9.','Class A: không lắp 47kΩ, điện trở đã có sẵn ở T8, T9.'],
+ warn:'Cọc T10, T11 (nguồn ngoài) theo tài liệu hãng. Cọc ra NAC và cọc T10 nào là + thì đọc nhãn module.',
+ src:'https://manuals.plus/notifier/fcm-1-supervised-control-module-manual.pdf'},
+{id:'nf-frm1', b:'notifier', code:'FRM-1', name:'Module rơ-le 2 bộ tiếp điểm', type:'out', lv:'B',
+ use:'Điều khiển quạt, cửa, thang máy, báo về hệ thống khác.',
+ top:[{t:'COM 1',r:'R',c:'c'},{t:'NO 1',r:'R',c:'c'},{t:'COM 2',r:'R',c:'c'},{t:'NO 2',r:'R',c:'c'}],
+ grp:[{k:'ctl',l:'Thiết bị 1',d:'Ngõ điều khiển'},{k:'ctl',l:'Thiết bị 2',d:'Ngõ điều khiển'}],
+ loop:{i:['SLC +','SLC −'],o:null},
+ kv:[['Tiếp điểm','3A ở 30VDC (tải thuần trở); 0,3A ở 125VAC (tải cảm)'],['Kiểu','2 bộ chuyển mạch (Form C) đóng cùng lúc']],
+ notes:['Rơ-le không giám sát dây ra. Tải 220VAC công suất lớn phải qua rơ-le trung gian.'],
+ src:'https://prod-edam.honeywell.com/content/dam/honeywell-edam/hbt/en-us/documents/literature-and-specs/datasheets/HCE-DOC-02-040-FlashScan-Modules-RevB-v5.pdf'},
+{id:'nf-fzm1', b:'notifier', code:'FZM-1', name:'Module vùng đầu báo thường', type:'in', lv:'B',
+ use:'Gom vùng đầu báo thường 2 dây vào loop địa chỉ.',
+ pwr:'Nguồn 24VDC ngoài (cọc T10, T11)',
+ top:[{t:'T10',r:'L',c:'p',lab:'+24V'},{t:'T11',r:'L',c:'n',lab:'0V'},{t:'IDC +',r:'R',c:'f'},{t:'IDC −',r:'R',c:'f'}],
+ grp:[{k:'chain',l:'Đầu báo thường 2 dây',devs:['ĐB 1','ĐB N'],eol:'3,9kΩ'}],
+ loop:{i:['SLC +','SLC −'],o:null},
+ kv:[['Điện trở cuối','3,9kΩ'],['Nguồn ngoài','24V, tối đa 90mA mỗi module'],['Điện trở dây IDC','Tối đa 25Ω']],
+ warn:'Cọc nào của T10, T11 là cực + thì đọc nhãn module.',
+ src:'https://prod-edam.honeywell.com/content/dam/honeywell-edam/hbt/en-us/documents/literature-and-specs/datasheets/HCE-DOC-02-040-FlashScan-Modules-RevB-v5.pdf'},
+
+/* ---------- EST ---------- */
+{id:'est-ct1', b:'est', code:'SIGA-CT1', name:'Module giám sát 1 ngõ vào', type:'in', lv:'B',
+ use:'Công tắc dòng chảy, van giám sát, tín hiệu thiết bị.',
+ top:[{t:'IN +',r:'R',c:'f'},{t:'IN −',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'47kΩ'}],
+ loop:{i:['SLC vào +','SLC vào −'],o:['SLC ra +','SLC ra −']},
+ kv:[['Điện trở cuối','47kΩ (EOL-47)'],['Mã cá tính','1 báo cháy giữ (mặc định); 2 báo cháy trễ; 3 tác động không giữ; 4 tác động giữ']],
+ notes:['Tháo điện trở thử kèm theo module trước khi đấu dây thật.','Ngõ vào là Class B.'],
+ src:'https://firealarm.com/wp-content/uploads/2018/05/387021P-EN.pdf'},
+{id:'est-ct2', b:'est', code:'SIGA-CT2', name:'Module giám sát 2 ngõ vào', type:'in', lv:'B',
+ use:'Giám sát 2 tiếp điểm riêng bằng 1 module.',
+ top:[{t:'IN1 +',r:'R',c:'f'},{t:'IN1 −',r:'R',c:'f'},{t:'IN2 +',r:'R',c:'f'},{t:'IN2 −',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm 1 (thường mở)',eol:'47kΩ'},{k:'in',l:'Tiếp điểm 2 (thường mở)',eol:'47kΩ'}],
+ loop:{i:['SLC vào +','SLC vào −'],o:['SLC ra +','SLC ra −']},
+ kv:[['Điện trở cuối','47kΩ mỗi ngõ']],
+ src:'https://cdn.shopify.com/s/files/1/0891/2522/4751/files/SIGA-CT1_2_--_Input_Modules.pdf'},
+{id:'est-cr', b:'est', code:'SIGA-CR', name:'Module rơ-le điều khiển', type:'out', lv:'B',
+ use:'Điều khiển quạt, cửa từ, thang máy, báo về hệ thống khác.',
+ top:[{t:'C',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'NC',r:''}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'}],
+ loop:{i:['SLC vào +','SLC vào −'],o:['SLC ra +','SLC ra −']},
+ kv:[['Tiếp điểm','2A ở 24VDC; 0,5A ở 120VAC (Form C)'],['Mã cá tính','8: tiếp điểm khô']],
+ notes:['Lắp cùng phòng với thiết bị được điều khiển. Không dùng cho tải điện dung.'],
+ src:'https://manuals.plus/edwards/siga-cr-control-relay-module-manual'},
+{id:'est-cc1', b:'est', code:'SIGA-CC1', name:'Module cấp nguồn còi đèn, loa', type:'out', lv:'B',
+ use:'Đóng nguồn 24V (hoặc tín hiệu loa) cho dãy còi đèn khi có lệnh.',
+ pwr:'Nguồn 24VDC (riser)',
+ top:[{t:'Riser +',r:'L',c:'p',lab:'+24V'},{t:'Riser −',r:'L',c:'n',lab:'0V'},{t:'Ra +',r:'R',c:'p'},{t:'Ra −',r:'R',c:'n'}],
+ grp:[{k:'chain',l:'Còi đèn đấu song song',devs:['Còi 1','Còi N'],eol:'47kΩ'}],
+ loop:{i:['SLC vào +','SLC vào −'],o:['SLC ra +','SLC ra −']},
+ kv:[['Điện trở cuối','47kΩ ở thiết bị cuối']],
+ warn:'Em chưa xem được bảng thông số đầy đủ của SIGA-CC1. Giá trị điện trở cuối và dòng tối đa kiểm tra lại trên tờ hướng dẫn kèm module.',
+ src:'https://permits.puyallupwa.gov/Portal/Permit/GetFile/158700'},
+
+/* ---------- Simplex ---------- */
+{id:'sx-9001', b:'simplex', code:'4090-9001', name:'Module giám sát (Supervised IAM)', type:'in', lv:'B',
+ use:'Giám sát công tắc dòng chảy, van, tiếp điểm thường mở.',
+ top:[{t:'IDC +',r:'R',c:'f'},{t:'IDC −',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'theo nhãn'}],
+ loop:{i:['IDNet +','IDNet −'],o:null},
+ kv:[['Cọc','1 đến 4: IDNet và ngõ vào'],['Địa chỉ','DIP 8 nấc, nấc 1 là bit nhỏ nhất, ON = 1. IDNet 1–250'],['Dây IDNet','18 AWG xoắn đôi, xa nhất 2.500 ft (khoảng 760m)']],
+ notes:['Không quấn dây vòng qua cọc. Cắt dây để giám sát được đứt dây.'],
+ warn:'Tài liệu em đọc được không ghi giá trị điện trở cuối. Xem sơ đồ 842-073 hoặc điện trở kèm module.',
+ src:'https://firealarm.com/wp-content/uploads/2018/11/4090-9001-Supervised-IAM-Installation-Instruction.pdf'},
+{id:'sx-9002', b:'simplex', code:'4090-9002', name:'Module rơ-le (Relay IAM)', type:'out', lv:'B',
+ use:'Điều khiển thiết bị bằng tiếp điểm, có giám sát trạng thái.',
+ top:[{t:'C',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'NC',r:''}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'}],
+ loop:{i:['IDNet +','IDNet −'],o:null},
+ kv:[['Trạng thái ban đầu','Rơ-le TẮT khi mới cấp nguồn hoặc mất liên lạc IDNet'],['Tủ tương thích','4007ES, 4008, 4010, 4010ES, 4100ES, 4100U']],
+ src:'https://armosystems.ru/upload/iblock/5aa/a340yd6tzpwf28y3m435ohfu38d7vzkh.pdf'},
+{id:'sx-9101', b:'simplex', code:'4090-9101', name:'Module vùng đầu báo thường (ZAM, Class B)', type:'in', lv:'A',
+ use:'Gom vùng đầu báo thường vào IDNet.',
+ pwr:'Nguồn 24VDC',
+ top:[{t:'+24V',r:'L',c:'p',lab:'+24V'},{t:'0V',r:'L',c:'n',lab:'0V'},{t:'IDC +',r:'R',c:'f'},{t:'IDC −',r:'R',c:'f'}],
+ grp:[{k:'chain',l:'Đầu báo thường',devs:['ĐB 1','ĐB N'],eol:'theo nhãn'}],
+ loop:{i:['+IDNet','−IDNet'],o:null},
+ kv:[['8 cọc trên nhãn','+24V, 0V, +IDNET, −IDNET, ZONE PWR +, ZONE PWR −, IDC +, IDC −'],['Bản Class A','4090-9106']],
+ warn:'Giá trị điện trở cuối và cách đấu cọc ZONE PWR xem tờ hướng dẫn 574-183 kèm module.',
+ src:'https://www.slideshare.net/slideshow/fault-isolator-base-40989793pdf/260129943'},
+
+/* ---------- Siemens ---------- */
+{id:'si-221', b:'siemens', code:'FDCIO221', name:'Module vào/ra 1 ngõ (Cerberus PRO)', type:'io', lv:'B',
+ use:'Nhận 1 tiếp điểm, điều khiển 1 thiết bị.',
+ top:[{t:'Ra',r:'R',c:'c'},{t:'Ra',r:'R',c:'c'},{t:'Vào',r:'R',c:'f'},{t:'Vào',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm khô',eol:'3,3kΩ'}],
+ loop:{i:['FDnet +','FDnet −'],o:['FDnet +','FDnet −'],pol:true},
+ kv:[['Tiếp điểm','2A ở 24VDC hoặc 24VAC'],['Điện trở ngõ vào','3,3kΩ / 680Ω (giám sát đứt và chập)'],['Giám sát ngõ ra','3,3kΩ kèm điốt 1N5404'],['Điện trở dây ngõ vào','Tối đa 20Ω']],
+ notes:['Có cách ly tích hợp. Chú ý cực + và − của dây FDnet.'],
+ warn:'Bản tiếng Trung FDCIO221-CN là tài liệu em đọc được. Vị trí 680Ω (giám sát chập) xem hình 9 trong tờ hướng dẫn.',
+ src:'https://sid.siemens.com/api/khub/documents/FpPm~Rt_wTC7zmkJvvWX3Q/content'},
+{id:'si-221i', b:'siemens', code:'FDCI221', name:'Module giám sát 1 ngõ vào', type:'in', lv:'B',
+ use:'Nhận 1 tiếp điểm khô.',
+ top:[{t:'Vào',r:'R',c:'f'},{t:'Vào',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm khô',eol:'3,3kΩ'}],
+ loop:{i:['FDnet +','FDnet −'],o:['FDnet +','FDnet −'],pol:true},
+ kv:[['Điện áp','DC 12–33V'],['Điện trở cuối','Theo bộ điện trở kèm module']],
+ src:'https://www.scribd.com/document/501101337/Download-9'},
+{id:'si-422', b:'siemens', code:'FDCIO422', name:'Module 4 vào / 4 ra (hệ chuẩn UL)', type:'io', lv:'B',
+ use:'Tối đa 4 ngõ vào Class B hoặc 2 ngõ Class A.',
+ top:[{t:'IN1',r:'R',c:'f'},{t:'IN1',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở (ngõ 1)',eol:'470Ω'}],
+ loop:{i:['SLC +','SLC −'],o:['SLC +','SLC −']},
+ kv:[['Điện trở cuối','470Ω ±1%, ½W (kèm 4 cái)'],['Thời gian tác động','Giữ tối thiểu 0,25 giây']],
+ notes:['Hình chỉ vẽ ngõ 1. Các ngõ 2, 3, 4 đấu giống vậy.'],
+ src:'https://sid.siemens.com/api/khub/documents/HKc3SA0ItPl_J8IEfvvMbA/content'},
+
+/* ---------- Bosch ---------- */
+{id:'bo-i2', b:'bosch', code:'FLM-420-I2', name:'Module 2 ngõ vào', type:'in', lv:'B',
+ use:'Giám sát 2 tiếp điểm (cửa, van, tín hiệu thiết bị).',
+ top:[{t:'IN1 +',r:'R',c:'f'},{t:'IN1 −',r:'R',c:'f'},{t:'IN2 +',r:'R',c:'f'},{t:'IN2 −',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm 1',eol:'3,9kΩ'},{k:'in',l:'Tiếp điểm 2',eol:'3,9kΩ'}],
+ loop:{i:['LSN a','LSN b'],o:['LSN a','LSN b']},
+ kv:[['Điện trở cuối','3,9kΩ'],['Điện trở dây','Tổng 2 dây tối đa 50Ω'],['Ngưỡng chập','Dưới 800Ω']],
+ src:'https://www.manualslib.de/manual/482359/Bosch-Flm-420-I2.html?page=12'},
+{id:'bo-con', b:'bosch', code:'FLM-420/4-CON', name:'Module vùng đầu báo thường (LSN 4 dây)', type:'in', lv:'B',
+ use:'Gom vùng đầu báo thường, nút ấn thường vào LSN.',
+ pwr:'Nguồn 24VDC (LSN phụ hoặc nguồn ngoài)',
+ top:[{t:'V +',r:'L',c:'p',lab:'+24V'},{t:'V −',r:'L',c:'n',lab:'0V'},{t:'Vùng +',r:'R',c:'f'},{t:'Vùng −',r:'R',c:'f'}],
+ grp:[{k:'chain',l:'Đầu báo thường',devs:['ĐB 1','ĐB N'],eol:'3,92kΩ'}],
+ loop:{i:['LSN a','LSN b'],o:['LSN a','LSN b']},
+ kv:[['Điện trở cuối','3,92kΩ (dây kèm module); Class B có loại 2,2kΩ / 3,9kΩ'],['Nguồn','23,5–30VDC, 200mA mỗi ngõ'],['Class A','Không cần điện trở cuối']],
+ src:'https://gpcabling.com.br/produto_documento/99008/99008_1.pdf'},
+
+/* ---------- Hochiki ---------- */
+{id:'hc-dim2', b:'hochiki', code:'CHQ-DIM2(SCI)', name:'Module 2 ngõ vào', type:'in', lv:'A',
+ use:'Công tắc dòng chảy, tiếp điểm cửa, tín hiệu thiết bị.',
+ top:[{t:'+ IN1',r:'R',c:'f'},{t:'− IN1',r:'R',c:'f'},{t:'+ IN2',r:'R',c:'f'},{t:'− IN2',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm 1',eol:'10kΩ',act:'470Ω'},{k:'in',l:'Tiếp điểm 2',eol:'10kΩ',act:'470Ω'}],
+ loop:{i:['+ LOOP IN','− LOOP IN'],o:['+ LOOP OUT','− LOOP OUT'],pol:true},
+ kv:[['Điện trở cuối','10kΩ'],['Điện trở kích','470Ω nối tiếp tiếp điểm'],['Ngưỡng','Dưới 50Ω chập; trên 100kΩ đứt'],['Điện áp loop','17–41VDC']],
+ notes:['Cọc S: chống nhiễu, nối vỏ cáp nếu có.','Mỗi ngõ chọn được thường mở hoặc thường đóng.'],
+ src:'https://shop-fire.com/pub/media/productattach/1/4/1433820-13_installation_instructions_01.pdf'},
+{id:'hc-sim', b:'hochiki', code:'CHQ-SIM', name:'Module 1 ngõ vào', type:'in', lv:'B',
+ use:'Giám sát 1 tiếp điểm.',
+ top:[{t:'IN +',r:'R',c:'f'},{t:'IN −',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'10kΩ',act:'470Ω'}],
+ loop:{i:['+ LOOP','− LOOP'],o:null,pol:true},
+ kv:[['Điện trở cuối','10kΩ ở đầu xa nhất'],['Điện trở kích','470Ω trên dây ngõ vào'],['Địa chỉ','Máy TCH-B100, dây PL-3']],
+ src:'https://manualmachine.com/hochiki/chqsim/1592519-user-manual'},
+{id:'hc-som', b:'hochiki', code:'CHQ-SOM', name:'Module 1 ngõ ra rơ-le', type:'out', lv:'B',
+ use:'Điều khiển thiết bị bằng tiếp điểm khô.',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO/NC',r:'R',c:'c'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'}],
+ loop:{i:['+ LOOP','− LOOP'],o:null,pol:true},
+ kv:[['Tiếp điểm','30VDC, 1A (tải thuần trở), chọn được NO hoặc NC'],['Đấu dây','3 dây ra có màu theo nhãn sản phẩm']],
+ warn:'Trạng thái tiếp điểm không xác định khi module chưa có nguồn loop.',
+ src:'https://manualmachine.com/hochiki/chqsom/1592522-user-manual'},
+{id:'hc-drc2', b:'hochiki', code:'CHQ-DRC2 / CHQ-MRC2', name:'Module rơ-le có ngõ vào giám sát', type:'io', lv:'B',
+ use:'Điều khiển thiết bị và nhận phản hồi.',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'NC',r:''},{t:'IN +',r:'R',c:'f'},{t:'IN −',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm phản hồi',eol:'10kΩ',act:'470Ω'}],
+ loop:{i:['+ LOOP IN','− LOOP IN'],o:['+ LOOP OUT','− LOOP OUT'],pol:true},
+ kv:[['Tiếp điểm DRC2','30VDC, 1A'],['MRC2','Rơ-le dùng điện lưới, xem định mức trên nhãn'],['Điện trở ngõ vào','10kΩ cuối dây, 470Ω kích']],
+ src:'https://www.hedengren.com/no/amfile/file/download/file_id/1027993/product_id/73509'},
+{id:'hc-dsc', b:'hochiki', code:'CHQ-DSC', name:'Module điều khiển 2 nhánh còi', type:'out', lv:'B',
+ use:'Cấp nguồn có giám sát cho 2 nhánh còi đèn.',
+ pwr:'Nguồn 24VDC',
+ top:[{t:'24V +',r:'L',c:'p',lab:'+24V'},{t:'24V −',r:'L',c:'n',lab:'0V'},{t:'SNDR1 +',r:'R',c:'p'},{t:'SNDR1 −',r:'R',c:'n'}],
+ grp:[{k:'chain',l:'Nhánh còi 1',devs:['Còi 1','Còi N'],eol:'1kΩ 2W'}],
+ loop:{i:['+ LOOP IN','− LOOP IN'],o:['+ LOOP OUT','− LOOP OUT'],pol:true},
+ kv:[['Điện trở cuối còi','1kΩ, 2W'],['Điện trở ngõ vào','10kΩ']],
+ notes:['Hình chỉ vẽ nhánh 1. Nhánh 2 đấu giống vậy.'],
+ src:'https://www.hedengren.com/no/amfile/file/download/file_id/1027993/product_id/73509'},
+
+/* ---------- Nittan ---------- */
+{id:'nt-2i1o', b:'nittan', code:'EV-2I1O', name:'Module 2 vào / 1 ra có cách ly', type:'io', lv:'B',
+ use:'Nhận 2 tín hiệu, điều khiển 1 thiết bị (quạt, hút khói).',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'IN1 +',r:'R',c:'f'},{t:'IN1 −',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm 1',eol:'theo nhãn'}],
+ loop:{i:['Loop vào +','Loop vào −'],o:['Loop ra +','Loop ra −'],pol:true},
+ kv:[['Tiếp điểm','5A ở 240VAC'],['Ngõ vào','2 ngõ giám sát Class B'],['Điện áp loop','20–38VDC']],
+ notes:['Tiếp điểm có giám sát trạng thái bật, tắt, kẹt.'],
+ warn:'Em chưa đọc được giá trị điện trở cuối và tên cọc của Nittan. Xem tờ hướng dẫn kèm module.',
+ src:'https://manualshive.com/en/manual/nittan/ev-2i1o/1696571'},
+{id:'nt-3io', b:'nittan', code:'EV-3IO', name:'Module 3 vào / 3 ra có cách ly', type:'io', lv:'B',
+ use:'Nhiều tín hiệu vào ra tại một vị trí.',
+ top:[{t:'COM1',r:'R',c:'c'},{t:'NO1',r:'R',c:'c'},{t:'IN1 +',r:'R',c:'f'},{t:'IN1 −',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị 1',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm 1',eol:'theo nhãn'}],
+ loop:{i:['Loop vào +','Loop vào −'],o:['Loop ra +','Loop ra −'],pol:true},
+ kv:[['Điện áp loop','20–38VDC'],['Cài đặt','Có chọn ngõ vào thường đóng và chế độ an toàn khi lỗi (fail safe)']],
+ notes:['Hình vẽ kênh 1. Kênh 2, 3 đấu giống vậy.'],
+ warn:'Tên cọc và điện trở cuối xem tờ hướng dẫn kèm module.',
+ src:'https://www.wmestore.co.uk/cdn/shop/files/EV-3IO_Data_Sheet_Ju.pdf'},
+
+/* ---------- Dahua ---------- */
+{id:'dh-1400', b:'dahua', code:'HY-1400', name:'Module giám sát (Input)', type:'in', lv:'B',
+ use:'Giám sát tiếp điểm thiết bị.',
+ top:[{t:'IN',r:'R',c:'f'},{t:'G',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'theo nhãn'}],
+ loop:{i:['Loop','Loop'],o:null},
+ kv:[['Loop','2 dây, không phân cực'],['Địa chỉ','1–254, máy mã hóa'],['Dòng','Giám sát ≤150µA, tác động ≤190µA']],
+ warn:'Trang của hãng không ghi tên cọc và điện trở cuối. Đọc nhãn module.',
+ src:'https://www.dahuasecurity.com/la/products/All-Products/Fire-Alarm/Addressable-Fire-Alarm-System/Modules/Input-Module/HY-1400'},
+{id:'dh-1410', b:'dahua', code:'HY-1410 / HY-1410E', name:'Module vào/ra', type:'io', lv:'B',
+ use:'HY-1410: ra tiếp điểm khô. HY-1410E: ra mức điện áp 24V.',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'IN',r:'R',c:'f'},{t:'G',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm phản hồi',eol:'theo nhãn'}],
+ loop:{i:['Loop','Loop'],o:null},
+ kv:[['Loop','2 dây, không phân cực, 24VDC'],['HY-1410E','Ngõ ra 24VDC / 40mA, chỉ đủ kích rơ-le trung gian'],['Địa chỉ','1–254']],
+ warn:'Tên cọc và điện trở cuối đọc nhãn module.',
+ src:'https://www.dahuasecurity.com/la/products/All-Products/Fire-Alarm/Addressable-Fire-Alarm-System/Modules/InputOutput-Module-with-Level-Output/HY-1410E'}
+];
+
+var TYPE = {in:['Ngõ vào','t-in'], out:['Ngõ ra','t-out'], io:['Vào/ra','t-io'], x:['Cách ly','t-x']};
+var esc = function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+
+/* ===== Vẽ sơ đồ từ dữ liệu ===== */
+function draw(m){
+  var top=m.top||[], n=top.length, wide=n>5, x0=wide?200:250, x1=wide?520:510;
+  var o=[], w=function(c,d){o.push('<path class="w w'+c+'" d="'+d+'"/>')}, tx=function(x,y,s,cl,a){o.push('<text x="'+x+'" y="'+y+'"'+(cl?' class="'+cl+'"':'')+(a?' text-anchor="'+a+'"':'')+'>'+esc(s)+'</text>')};
+  var circ=[];
+  var xs=top.map(function(_,i){return n===1?(x0+x1)/2:x0+30+i*((x1-x0-60)/(n-1))});
+  // dây về nguồn bên trái
+  var L=[];top.forEach(function(t,i){if(t.r==='L')L.push(i)});
+  L.forEach(function(i,mI){var y=100-mI*18;w(top[i].c,'M'+xs[i]+' 120 V'+y+' H20');tx(22,y-5,top[i].lab||top[i].t,'s '+(top[i].c==='p'?'rd':top[i].c==='n'?'bl':''));});
+  if(m.pwr)tx(22,L.length?100-L.length*18-8:30,m.pwr,'s g');
+  // dây ra thiết bị bên phải
+  var R=[];top.forEach(function(t,i){if(t.r==='R')R.push(i)});
+  var gy=function(k){var g=Math.floor(k/2);return 62+g*100+(k%2?58:0)};
+  R.forEach(function(i,k){var rise=38+k*13,lane=588-k*11,y=gy(k);w(top[i].c,'M'+xs[i]+' 120 V'+rise+' H'+lane+' V'+y+' H600');circ.push([600,y]);});
+  // thiết bị
+  (m.grp||[]).forEach(function(g,gi){
+    var a=62+gi*100,b=a+58,c=(top[R[gi*2]]||{}).c||'f',c2=(top[R[gi*2+1]]||{}).c||c;
+    tx(606,g.k==='ctl'?a-17:a-9,g.l,'s');
+    if(g.k==='ctl'){w(c,'M600 '+a+' H638');w(c2,'M600 '+b+' H638');o.push('<rect class="d" x="638" y="'+(a-10)+'" width="110" height="'+(b-a+20)+'" rx="6"/>');tx(693,(a+b)/2+4,g.d||'Ngõ điều khiển','s','middle');}
+    else if(g.k==='in'){
+      w(c,'M600 '+a+' H730');w(c2,'M600 '+b+' H730');
+      var t=a+(g.act?30:20),bb=b-14;
+      if(g.act){w('k','M640 '+a+' V'+(a+8)+' M640 '+(a+22)+' V'+t);o.push('<rect class="d" x="635" y="'+(a+8)+'" width="10" height="14"/>');tx(650,a+20,g.act,'s');}
+      else w('k','M640 '+a+' V'+t);
+      w('k','M640 '+b+' V'+bb+' L652 '+(t+3));
+      w('k','M730 '+a+' V'+((a+b)/2-12)+' M730 '+((a+b)/2+12)+' V'+b);o.push('<rect class="d" x="724" y="'+((a+b)/2-12)+'" width="12" height="24"/>');
+      tx(718,(a+b)/2+4,g.eol,'s','end');
+    } else if(g.k==='chain'){
+      w(c,'M600 '+a+' H730');w(c2,'M600 '+b+' H730');
+      [[618,g.devs[0]],[668,g.devs[1]]].forEach(function(d){w('k','M'+(d[0]+19)+' '+a+' V'+(a+8)+' M'+(d[0]+19)+' '+(b-8)+' V'+b);o.push('<rect class="d" x="'+d[0]+'" y="'+(a+8)+'" width="38" height="'+(b-a-16)+'" rx="4"/>');tx(d[0]+19,(a+b)/2+4,d[1],'s','middle');});
+      tx(662,(a+b)/2+4,'…','b','middle');
+      w('k','M730 '+a+' V'+((a+b)/2-12)+' M730 '+((a+b)/2+12)+' V'+b);o.push('<rect class="d" x="724" y="'+((a+b)/2-12)+'" width="12" height="24"/>');
+      tx(744,b+16,g.eol+' cuối tuyến','s','end');
+    }
+  });
+  // loop
+  var lp=m.loop, iso=m.type==='x', ca=lp.pol?'p':'l', cb=lp.pol?'n':'l';
+  var bi=[x0+30,x0+65], bo=[x1-65,x1-30];
+  w(ca,'M40 290 H'+bi[0]+' V250');w(cb,'M40 310 H'+bi[1]+' V250');
+  circ.push([bi[0],250],[bi[1],250]);
+  tx(40,282,lp.o?'LOOP VÀO':'LOOP (vào và ra chung cọc)','s');
+  if(lp.o){w(ca,'M'+bo[1]+' 250 V290 H740');w(cb,'M'+bo[0]+' 250 V310 H740');circ.push([bo[0],250],[bo[1],250]);tx(740,282,'LOOP RA','s','end');}
+  // khung module
+  o.unshift('');
+  var box='<rect class="m" x="'+x0+'" y="120" width="'+(x1-x0)+'" height="130" rx="4"/>';
+  var lab=[];
+  top.forEach(function(t,i){lab.push('<text x="'+xs[i]+'" y="138" text-anchor="middle" class="s">'+esc(t.t)+'</text>');circ.push([xs[i],120]);if(!t.r)lab.push('<text x="'+xs[i]+'" y="112" text-anchor="middle" class="s g">trống</text>');});
+  lab.push('<text x="'+bi[0]+'" y="242" text-anchor="middle" class="s">'+esc(lp.i[0])+'</text><text x="'+bi[1]+'" y="228" text-anchor="middle" class="s">'+esc(lp.i[1])+'</text>');
+  if(lp.o)lab.push('<text x="'+bo[0]+'" y="228" text-anchor="middle" class="s">'+esc(lp.o[1])+'</text><text x="'+bo[1]+'" y="242" text-anchor="middle" class="s">'+esc(lp.o[0])+'</text>');
+  lab.push('<text x="'+(x0+x1)/2+'" y="'+(iso?182:180)+'" text-anchor="middle" class="b">'+esc(m.code)+'</text>');
+  var c=circ.map(function(p){return '<circle class="t" cx="'+p[0]+'" cy="'+p[1]+'" r="4.5"/>'}).join('');
+  return '<svg viewBox="0 0 760 330" role="img" aria-label="Sơ đồ đấu dây '+esc(m.code)+'">'+o.join('')+box+lab.join('')+c+'</svg>';
+}
+
+/* ===== Giao diện ===== */
+var app=document.getElementById('app'), state={q:'',b:''};
+function item(m){var t=TYPE[m.type];return '<button class="item" data-id="'+m.id+'" type="button"><b>'+esc(m.code)+'</b><small>'+esc(m.name)+'</small><span class="tag '+t[1]+'">'+t[0]+'</span></button>';}
+function home(){
+  document.title='Module báo cháy';
+  app.innerHTML=
+  '<div><h1>Sơ đồ đấu nối <span>module báo cháy</span></h1><p class="sub">'+M.length+' module của '+(BRANDS.length-1)+' hãng. Chọn hãng hoặc gõ mã module.</p></div>'+
+  '<div class="search"><input id="q" type="search" placeholder="Gõ mã module, ví dụ FMM-1, 9301, CHQ" autocomplete="off" value="'+esc(state.q)+'"></div>'+
+  '<div class="chips" id="chips"><button class="chip" type="button" data-b="" aria-pressed="'+(!state.b)+'">Tất cả</button>'+BRANDS.map(function(b){return '<button class="chip" type="button" data-b="'+b.id+'" aria-pressed="'+(state.b===b.id)+'">'+esc(b.n)+'</button>'}).join('')+'</div>'+
+  '<div class="list" id="list"></div>'+
+  '<div class="card"><h2>Nguyên tắc chung</h2><ul class="dots">'+
+  '<li>Tiếp điểm <b>thường mở</b>: điện trở cuối đấu <b>song song</b>, đặt ở thiết bị cuối dây.</li>'+
+  '<li>Tiếp điểm <b>thường đóng</b>: điện trở cuối đấu <b>nối tiếp</b> với tiếp điểm, cài module ở chế độ thường đóng.</li>'+
+  '<li>Dùng đúng điện trở của hãng. Mỗi hãng một giá trị: GST 4,7kΩ; Notifier, EST 47kΩ; Hochiki 10kΩ; Bosch 3,9kΩ.</li>'+
+  '<li>Loop có phân cực hay không tùy hãng. Module cách ly luôn đấu đúng cực vào, ra.</li>'+
+  '<li>Tiếp điểm module thường chỉ 1–3A ở 24–30VDC. Tải 220VAC đi qua rơ-le trung gian.</li></ul></div>'+
+  '<div class="card"><h2>Bảng tra nhanh điện trở cuối</h2><div class="tw"><table><thead><tr><th>Module</th><th>Hãng</th><th>Điện trở cuối</th></tr></thead><tbody>'+
+  M.filter(function(m){return (m.grp||[]).length}).map(function(m){var e=m.grp.map(function(g){return g.eol}).filter(Boolean)[0]||'Không dùng';return '<tr><td>'+esc(m.code)+'</td><td>'+esc(bn(m.b))+'</td><td>'+esc(e)+'</td></tr>'}).join('')+
+  '</tbody></table></div></div>';
+  var q=document.getElementById('q');
+  q.addEventListener('input',function(){state.q=q.value;list();});
+  document.getElementById('chips').addEventListener('click',function(e){var b=e.target.closest('.chip');if(!b)return;state.b=b.dataset.b;document.querySelectorAll('.chip').forEach(function(c){c.setAttribute('aria-pressed',String(c===b))});list();});
+  list();
+}
+function bn(id){return BRANDS.filter(function(b){return b.id===id})[0].n}
+function list(){
+  var q=state.q.trim().toLowerCase().replace(/\s+/g,''), out='';
+  BRANDS.forEach(function(b){
+    if(state.b&&state.b!==b.id)return;
+    var ms=M.filter(function(m){return m.b===b.id&&(!q||(m.code+m.name+b.n).toLowerCase().replace(/\s+/g,'').indexOf(q)>=0)});
+    if(!ms.length&&(q||b.id!=='khac'))return;
+    out+='<div class="grp">'+esc(b.n)+'</div>';
+    if(state.b===b.id||!ms.length)out+='<p class="sub" style="margin:0 2px">'+esc(b.d)+'</p>';
+    out+=ms.map(item).join('');
+  });
+  var L=document.getElementById('list');L.innerHTML=out||'<div class="empty">Không thấy module nào. Thử gõ mã khác.</div>';
+  L.querySelectorAll('.item').forEach(function(x){x.addEventListener('click',function(){location.hash=x.dataset.id})});
+}
+function page(m){
+  var b=BRANDS.filter(function(x){return x.id===m.b})[0];
+  document.title=m.code+' – Module báo cháy';
+  app.innerHTML=
+  '<div class="top"><button class="back" id="back" type="button" aria-label="Quay lại">&larr;</button><div><div class="brandline">'+esc(b.n)+'</div><h1>'+esc(m.code)+'</h1></div></div>'+
+  '<div class="card"><h3>'+esc(m.name)+'</h3><p style="margin:0">'+esc(m.use)+'</p></div>'+
+  '<div class="card"><h2>Sơ đồ đấu dây</h2><div class="sheet">'+draw(m)+'</div>'+
+  '<button class="bigb" id="big" type="button">Xem hình lớn (xoay ngang)</button>'+
+  '<div class="legend"><span style="--c:#d0021b">+24V</span><span style="--c:#1f5fd1">0V</span><span style="--c:#6a6a6a">Loop</span><span style="--c:#0a7a3d">Tiếp điểm</span><span style="--c:#c46a00">Ngõ vào</span></div>'+
+  (m.lv==='A'?'<div class="box okb"><b>Tên cọc theo tài liệu hãng</b>Vẫn đối chiếu nhãn in trên module trước khi đấu.</div>':'<div class="box warn"><b>Tên cọc ghi theo chức năng</b>Số cọc thật in trên đế module. Đọc nhãn module để biết cọc nào là cọc nào.</div>')+
+  '</div>'+
+  (m.warn?'<div class="box stop"><b>Lưu ý</b>'+esc(m.warn)+'</div>':'')+
+  '<div class="card"><h2>Thông số</h2><dl class="kv">'+(m.kv||[]).map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd>'}).join('')+'</dl>'+
+  (m.notes?'<ul class="dots">'+m.notes.map(function(s){return '<li>'+esc(s)+'</li>'}).join('')+'</ul>':'')+'</div>'+
+  '<div class="card"><h3>Về hãng '+esc(b.n)+'</h3><p style="margin:0;font-size:14px">'+esc(b.d)+'</p>'+
+  '<p class="hint">Tài liệu tham khảo: <a href="'+esc(m.src)+'" target="_blank" rel="noopener">mở tài liệu của hãng</a> (cần mạng)</p></div>';
+  document.getElementById('back').addEventListener('click',function(){if(history.length>1&&sessionStorage.getItem('mbc-in'))history.back();else location.hash='';});
+  document.getElementById('big').addEventListener('click',function(){var f=document.createElement('div');f.className='full';f.innerHTML=draw(m)+'<button class="x" type="button">Đóng</button>';document.body.appendChild(f);var close=function(){f.remove();document.removeEventListener('keydown',k)},k=function(e){if(e.key==='Escape')close()};f.querySelector('.x').addEventListener('click',close);document.addEventListener('keydown',k);f.querySelector('.x').focus();});
+}
+function route(){
+  var id=decodeURIComponent(location.hash.slice(1)), m=M.filter(function(x){return x.id===id})[0];
+  if(m){try{sessionStorage.setItem('mbc-in','1')}catch(e){}page(m);}else home();
+}
+window.addEventListener('hashchange',function(){route();window.scrollTo(0,0);});
+route();
+
+/* ===== Cài lên điện thoại ===== */
+var $=function(id){return document.getElementById(id)};
+if(!matchMedia('(display-mode: standalone)').matches&&!navigator.standalone){
+  var ev=null,box=$('install'),txt=$('install-t'),btn=$('install-b');
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ev=e;btn.hidden=false;box.hidden=false;});
+  btn.addEventListener('click',function(){if(!ev)return;ev.prompt();Promise.resolve(ev.userChoice).catch(function(){}).then(function(){ev=null;box.hidden=true;});});
+  window.addEventListener('appinstalled',function(){box.hidden=true;});
+  var ua=navigator.userAgent, ios=/iphone|ipad|ipod/i.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1), inApp=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\/|Messenger/i.test(ua);
+  if(inApp){txt.textContent=ios?'Đang mở trong Zalo/Facebook nên không cài được. Chọn "Mở bằng Safari", rồi cài từ Safari.':'Đang mở trong Zalo/Facebook nên không cài được. Bấm ⋮ ở góc trên, chọn "Mở bằng trình duyệt", rồi cài từ Chrome.';box.hidden=false;}
+  else if(ios){txt.textContent='Cài lên iPhone: bấm nút Chia sẻ ở thanh dưới Safari, chọn "Thêm vào MH chính", rồi bấm "Thêm".';box.hidden=false;}
+}
+if('serviceWorker' in navigator){
+  var foot=document.querySelector('footer'),tg=document.createElement('span');
+  tg.className='offline';foot.appendChild(document.createElement('br'));foot.appendChild(tg);
+  var say=function(t,ok){tg.textContent=t;tg.classList.toggle('ok',!!ok)};
+  say('Đang lưu app về máy...');
+  navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready})
+   .then(function(){say(navigator.onLine?'Đã lưu về máy, dùng được khi mất mạng.':'Đang dùng không có mạng (bản đã lưu trên máy).',true)})
+   .catch(function(){say('Chưa lưu được về máy. Mở lại khi có mạng.')});
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "name": "Sơ đồ đấu nối module báo cháy",
+  "short_name": "Module báo cháy",
+  "description": "Sơ đồ đấu dây module báo cháy địa chỉ các hãng GST, Notifier, EST, Simplex, Siemens, Bosch, Hochiki, Nittan, Dahua.",
+  "lang": "vi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef0f1",
+  "theme_color": "#1d2328",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

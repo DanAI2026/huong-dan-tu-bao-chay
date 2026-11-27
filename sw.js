@@ -1,6 +1,6 @@
 // Tủ báo cháy: lưu sẵn ứng dụng trên máy để mở được khi không có mạng.
 // build_pwa.py thay số phiên bản mỗi lần đóng gói, máy anh em tự lấy bản mới khi có mạng.
-const CACHE = 'tu-bao-chay-202611271010';
+const CACHE = 'tu-bao-chay-202611271130';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png', './simplex-4100es.jpg'];
 // tải thêm nếu được (phông chữ); thiếu thì app vẫn chạy
 const EXTRA = ['https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap'];
@@ -28,6 +28,8 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
+  // app Module báo cháy nằm trong thư mục module/ có bộ lưu riêng, không chặn
+  if (url.origin === location.origin && url.pathname.includes('/module/')) return;
   // trang chính: mở ngay bản đã lưu (kể cả sóng yếu), có mạng thì cập nhật ngầm cho lần mở sau
   if (req.mode === 'navigate') {
     e.respondWith(caches.open(CACHE).then(async c => {
