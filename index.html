@@ -109,6 +109,7 @@ code{font-family:ui-monospace,Consolas,monospace;font-size:14px;background:var(-
 .box.warn{background:var(--warn-soft);border-left:4px solid var(--warn)}
 .box.stop{background:var(--accent-soft);border-left:4px solid var(--accent)}
 .box.info{background:var(--chip);border-left:4px solid var(--muted)}
+.fig{margin:0 0 10px}.fig img{width:100%;border-radius:10px;display:block}.fig figcaption{font-size:13px;color:var(--muted);margin-top:4px}
 .box b:first-child{display:block;margin-bottom:2px}
 
 .leds{display:flex;flex-direction:column}
@@ -297,6 +298,90 @@ var PANELS = [
         'Thiết bị đang chạy thì màn hình hiện DISABLE, đang bị cô lập thì hiện ENABLE. Chọn theo yêu cầu.'
       ]},
       {p:'Ví dụ: đầu báo địa chỉ 001, loop 01, tủ số 2 là <code>N002L01D001</code>.'}
+    ]}
+  ]
+},
+{
+  id:'simplex-4100es', name:'Simplex 4100ES', brand:'Simplex', type:'dc',
+  desc:'Tủ địa chỉ, vòng thiết bị MAPNET II hoặc IDNet. Màn hình 2 dòng, bàn phím số bên phải, các nút trên tủ có dán số 1-7 theo thứ tự xử lý báo nhầm.',
+  quick:{panel:'[[Fire Alarm Ack]]', bell:'[[Alarm Silence]]', reset:'[[System Reset]]', pass:'Chưa có, hỏi đơn vị bảo trì'},
+  tabs:[
+    {k:'so', t:'Bấm theo số', b:[
+      {img:'simplex-4100es.jpg', cap:'Các nút đã đánh số trên tủ. Số 4 là phím [[Enter]] ở bàn phím số bên phải, không có trong ảnh.'},
+      {stop:'<b>Trước tiên</b>Xem màn hình, cử người đến vị trí báo để kiểm tra. Nếu cháy thật: gọi 114, hướng dẫn thoát nạn, KHÔNG làm các bước dưới.'},
+      {steps:[
+        '<b>Số 1:</b> nhấn [[Alarm Silence]] để tắt chuông, còi toàn tòa nhà. Đèn Alarm Silenced sáng.',
+        '<b>Số 2:</b> nhấn [[Fire Alarm Ack]] để xác nhận báo cháy, tắt còi tại tủ. Đọc vị trí thiết bị trên màn hình.',
+        '<b>Số 3:</b> nhấn [[Disable]] để cô lập thiết bị đang báo nhầm. Màn hình phải đang hiện đúng thiết bị đó.',
+        '<b>Số 4:</b> nhấn [[Enter]] trên bàn phím số để xác nhận cô lập. Nếu tủ hỏi mật khẩu, nhập mật khẩu được cấp.',
+        '<b>Số 5:</b> nhấn nút dưới đèn Trouble ([[Trouble Ack]]) để xác nhận lỗi. Đèn Trouble sáng là do có thiết bị đang bị cô lập.',
+        '<b>Số 6:</b> nhấn [[System Reset]] để khôi phục tủ.',
+        '<b>Số 7:</b> nhấn [[Event Time]] để xem giờ xảy ra sự kiện, ghi sổ trực.'
+      ]},
+      {warn:'<b>Sau khi xử lý</b>Báo đơn vị bảo trì sửa thiết bị, rồi mở lại bằng [[Enable]] (xem thẻ "Cô lập thiết bị"). Ghi sổ đầy đủ.'}
+    ]},
+    {k:'chay', t:'Khi có cháy', b:[
+      {info:'<b>Nhận biết</b>Đèn Fire Alarm (đỏ) chớp, còi tại tủ kêu, chuông toàn nhà kêu.'},
+      {steps:[
+        'Nhấn [[Fire Alarm Ack]] để tắt còi tại tủ và xem vị trí. Có nhiều điểm báo: nhấn tiếp [[Fire Alarm Ack]] để xem lần lượt.',
+        'Nhấn [[More Info]] để xem thêm thông tin thiết bị. Dùng [[Previous]] / [[Next]] để lật danh sách.',
+        'Cử người đến kiểm tra vị trí. Chưa kiểm tra thì không reset.',
+        '<b>Cháy thật:</b> gọi 114, hướng dẫn thoát nạn, không nhấn [[Alarm Silence]].',
+        '<b>Báo nhầm:</b> nhấn [[Alarm Silence]] để tắt chuông. Xử lý tại chỗ: kéo nút nhấn khẩn về vị trí cũ (dùng chìa), làm thông thoáng đầu báo khói.',
+        'Nhấn [[System Reset]]. Màn hình hiện SYSTEM RESET IN PROGRESS. Đèn báo chớp lại thì nhấn Ack để xác nhận. Màn hình về SYSTEM IS NORMAL là xong.',
+        'Nếu hiện ALARM PRESENT, SYSTEM RESET ABORTED: thiết bị vẫn đang báo. Đọc màn hình, quay lại kiểm tra thiết bị đó.'
+      ]},
+      {p:'Một số tủ cài thời gian chặn tắt chuông: nhấn [[Alarm Silence]] trong thời gian này tủ sẽ không nhận. Đèn chớp có thể vẫn chớp đến khi reset.'}
+    ]},
+    {k:'loi', t:'Khi có lỗi', b:[
+      {leds:[
+        ['Fire Alarm','r','Đỏ','Có báo cháy.'],
+        ['Priority 2 Alarm','r','Đỏ','Báo động ưu tiên 2 (tùy cài đặt).'],
+        ['Supervisory','y','Vàng','Cảnh báo giám sát: van chữa cháy đóng, công tắc áp lực, trạng thái bơm.'],
+        ['Trouble','y','Vàng','Lỗi hệ thống: đứt dây, mất thiết bị, lỗi nguồn, ắc quy, thiết bị đang bị cô lập.'],
+        ['Alarm Silenced','y','Vàng','Chuông toàn nhà đang được tắt.'],
+        ['AC Power','g','Xanh','Có điện lưới. Tắt là mất điện lưới, tủ đang chạy ắc quy.']
+      ]},
+      {steps:[
+        'Nhấn nút dưới đèn đang chớp (Trouble hoặc Supervisory) để xác nhận, còi tủ tắt.',
+        'Nhấn tiếp để xem lần lượt từng lỗi. Nhấn [[More Info]] để xem chi tiết.',
+        'Ghi lại địa chỉ thiết bị, kiểm tra tại chỗ: thiết bị bị tháo, bị che, nước vào, đứt dây.',
+        'Sửa xong thì nhấn [[System Reset]]. Không tìm được nguyên nhân thì báo đơn vị bảo trì.'
+      ]},
+      {info:'<b>Mất điện lưới</b>Đèn AC Power tắt, đèn Trouble sáng. Kiểm tra cầu dao cấp nguồn cho tủ. Ắc quy chỉ giữ được trong thời gian giới hạn.'}
+    ]},
+    {k:'cl', t:'Cô lập thiết bị', b:[
+      {stop:'<b>Rủi ro cao</b>Thiết bị bị Disable sẽ không báo cháy về tủ, đèn Trouble sáng để nhắc. Phải ghi sổ, báo người phụ trách và Enable lại ngay khi sửa xong.'},
+      {h:'Cô lập'},
+      {steps:[
+        'Nhấn nút dưới đèn Trouble (hoặc [[Fire Alarm Ack]]) đến khi màn hình hiện đúng thiết bị cần cô lập.',
+        'Nhấn [[Disable]], rồi [[Enter]] trên bàn phím số để xác nhận.',
+        'Tủ hỏi mật khẩu thì nhập mật khẩu được cấp.',
+        'Ghi sổ: thiết bị nào, lý do, giờ cô lập.'
+      ]},
+      {h:'Mở lại'},
+      {steps:[
+        'Nhấn nút dưới đèn Trouble đến khi hiện thiết bị đang bị cô lập.',
+        'Nhấn [[Enable]], rồi [[Enter]].'
+      ]},
+      {warn:'<b>Lưu ý</b>Thiết bị phải đang bình thường trước khi mở lại. Nếu thiết bị còn báo, mở lại sẽ gây báo cháy.'}
+    ]},
+    {k:'dc', t:'Địa chỉ', b:[
+      {p:'Ví dụ màn hình hiện:'},
+      {p:'<code>DEVICE ADDRESS: 2-35</code><br><code>MAPNET DEVICE: M1-35</code>'},
+      {table:{head:['Ký hiệu','Ý nghĩa'], rows:[['M1','Vòng dây (loop) MAPNET số 1'],['35','Thiết bị số 35 trên vòng dây đó']]}},
+      {p:'Tra bảng danh sách thiết bị của tòa nhà để biết số 35 nằm ở phòng nào.'}
+    ]},
+    {k:'nut', t:'Các nút khác', b:[
+      {keys:[
+        ['Event Time','Xem giờ xảy ra sự kiện.'],
+        ['More Info','Xem thêm thông tin thiết bị đang hiện.'],
+        ['Previous / Next','Lật lên, lật xuống danh sách sự kiện.'],
+        ['Lamp Test','Thử toàn bộ đèn và màn hình. Nên thử hằng tuần.'],
+        ['DRILL','Diễn tập: kích hoạt chuông toàn nhà. Chỉ nhấn khi đã báo trước. Xong thì nhấn Alarm Silence và System Reset.'],
+        ['Menu','Vào menu chức năng (cần mật khẩu cho một số mục).']
+      ]},
+      {dots:['Hằng ngày: chỉ đèn AC Power sáng, màn hình SYSTEM IS NORMAL là bình thường.','Không cắt nguồn tủ, không tháo ắc quy.']}
     ]}
   ]
 },
@@ -1423,6 +1508,7 @@ function block(b){
   if(b.info) return '<div class="box info">'+fmt(b.info)+'</div>';
   if(b.p) return '<p class="t">'+fmt(b.p)+'</p>';
   if(b.h) return '<h3>'+fmt(b.h)+'</h3>';
+  if(b.img) return '<figure class="fig"><img src="'+esc(b.img)+'" alt="" loading="lazy">'+(b.cap?'<figcaption>'+fmt(b.cap)+'</figcaption>':'')+'</figure>';
   if(b.leds) return '<div class="leds">'+b.leds.map(function(l){
     return '<div class="led"><i class="'+l[1]+'"></i><p><span class="nm">'+fmt(l[0])+'</span> <span class="cl">· '+fmt(l[2])+'</span><br>'+fmt(l[3])+'</p></div>'}).join('')+'</div>';
   if(b.keys) return '<div class="keys">'+b.keys.map(function(k){
