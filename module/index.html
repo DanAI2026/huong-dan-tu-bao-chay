@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Sơ đồ đấu nối module báo cháy địa chỉ các hãng: GST, Notifier, Edwards EST, Simplex, Siemens, Bosch, Hochiki, Nittan, Dahua.">
+<meta name="description" content="Sơ đồ đấu nối module báo cháy địa chỉ các hãng: GST, Notifier, Edwards EST, Simplex, Siemens, Bosch, Hochiki, Nittan, Horing, Tanda, Dahua.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -138,7 +138,9 @@ var BRANDS = [
  {id:'hochiki', n:'Hochiki', d:'Module CHQ dùng giao thức ESP (Hochiki Europe). Địa chỉ đặt bằng máy lập trình TCH-B100. Ngõ vào giám sát dùng điện trở cuối 10kΩ và điện trở kích 470Ω.'},
  {id:'nittan', n:'Nittan', d:'Module Evolution (EV-) có cách ly tích hợp. Địa chỉ ghi bằng dây lập trình địa chỉ EV.'},
  {id:'dahua', n:'Dahua', d:'Module địa chỉ dòng HY. Loop 2 dây không phân cực, địa chỉ 1 đến 254 đặt bằng máy mã hóa.'},
- {id:'khac', n:'Horing, Tanda, Yunyang', d:'Em chưa tìm được tài liệu lắp đặt module công khai của các hãng này. Anh gửi catalogue hoặc ảnh nhãn module, em bổ sung vào app.'}
+ {id:'horing', n:'Horing', d:'Module dòng QA17 của Horing Lih (Đài Loan) dùng với tủ địa chỉ QA16. Địa chỉ đặt bằng công tắc DIP nhị phân. Điện trở cuối 10kΩ. Mỗi loop tối đa 250 thiết bị.'},
+ {id:'tanda', n:'Tanda', d:'Module dòng TX32xx, loop 2 dây, mã hóa địa chỉ điện tử. Điện trở cuối 10kΩ.'},
+ {id:'khac', n:'Yunyang', d:'Em chưa tìm được tài liệu module địa chỉ của Yunyang (chỉ có tài liệu tủ thường YF-1, YF-3, điện trở cuối vùng 10kΩ). Anh gửi catalogue hoặc ảnh nhãn module, em bổ sung.'}
 ];
 
 var LIN = {k:'in', l:'Thiết bị có tiếp điểm thường mở'};
@@ -403,6 +405,48 @@ var M = [
  warn:'Tên cọc và điện trở cuối xem tờ hướng dẫn kèm module.',
  src:'https://www.wmestore.co.uk/cdn/shop/files/EV-3IO_Data_Sheet_Ju.pdf'},
 
+
+/* ---------- Horing ---------- */
+{id:'hr-k', b:'horing', code:'QA17-K', name:'Module giám sát (Monitor)', type:'in', lv:'B',
+ use:'Nhận tín hiệu từ thiết bị ngoài: công tắc dòng chảy, tín hiệu chạy bơm, van.',
+ top:[{t:'IN',r:'R',c:'f'},{t:'IN',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm thường mở',eol:'10kΩ'}],
+ loop:{i:['Loop','Loop'],o:null},
+ kv:[['Điện trở cuối','10kΩ'],['Địa chỉ','Công tắc DIP nhị phân'],['Nhiệt độ','0 đến 50°C']],
+ warn:'Tên cọc in trên module. Tài liệu em đọc được chỉ có bảng thông số.',
+ src:'https://www.horinglih.com/en/product/detail/10001764'},
+{id:'hr-b', b:'horing', code:'QA17-B', name:'Module điều khiển (1 vào, 1 ra)', type:'io', lv:'B',
+ use:'Điều khiển và nhận phản hồi: hút khói, chữa cháy, cửa cuốn, bọt.',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'NC',r:''},{t:'IN',r:'R',c:'f'},{t:'IN',r:'R',c:'f'}],
+ grp:[{k:'ctl',l:'Thiết bị được điều khiển',d:'Ngõ điều khiển'},{k:'in',l:'Tiếp điểm phản hồi',eol:'10kΩ'}],
+ loop:{i:['Loop','Loop'],o:null},
+ kv:[['Tiếp điểm','1,5A ở 30VDC (COM, NO, NC)'],['Điện trở cuối','10kΩ'],['Địa chỉ','Công tắc DIP nhị phân']],
+ notes:['Tải dòng lớn hoặc 220VAC: dùng thêm module rơ-le QA17-A.'],
+ src:'https://hi-engineer.com/product/qa-series/'},
+{id:'hr-a', b:'horing', code:'QA17-A', name:'Module rơ-le công suất (Output)', type:'out', lv:'B',
+ use:'Đóng cắt dòng lớn hơn, ví dụ quạt hút khói, theo lệnh từ module điều khiển.',
+ top:[{t:'COM',r:'R',c:'c'},{t:'NO',r:'R',c:'c'},{t:'NC',r:''}],
+ grp:[{k:'ctl',l:'Tải 24VDC / 110VAC / 220VAC',d:'Thiết bị'}],
+ loop:{i:['Ngõ kích','Ngõ kích'],o:null},
+ kv:[['Tiếp điểm','4A ở 30VDC; 2,5A ở 250VAC'],['Điện trở cuối','Không dùng'],['Địa chỉ','Không có địa chỉ riêng']],
+ warn:'Module này không có địa chỉ. Cách nối ngõ kích từ QA17-B sang QA17-A xem tài liệu Horing hoặc nhãn module.',
+ src:'https://hi-engineer.com/product/qa-series/'},
+{id:'hr-h', b:'horing', code:'QA17-H', name:'Module cách ly', type:'x', lv:'B',
+ use:'Tách đoạn loop bị chập khỏi tủ.',
+ top:[], grp:[], loop:{i:['Vào','Vào'],o:['Ra','Ra']},
+ kv:[['Cách đấu','Nối tiếp trên loop'],['Điện trở cuối','Không dùng'],['Kích thước','60 x 76 x 31mm']],
+ warn:'Tài liệu không ghi cực tính. Đọc nhãn module, đấu đúng cọc vào và cọc ra.',
+ src:'https://pcccutc.com/module-cach-ly-isolator-module-qa17-h'},
+
+/* ---------- Tanda ---------- */
+{id:'td-3201', b:'tanda', code:'TX3201', name:'Module giám sát (Input)', type:'in', lv:'B',
+ use:'Giám sát công tắc dòng chảy, công tắc áp lực, tín hiệu thiết bị.',
+ top:[{t:'IN',r:'R',c:'f'},{t:'IN',r:'R',c:'f'}],
+ grp:[{k:'in',l:'Tiếp điểm khô',eol:'10kΩ'}],
+ loop:{i:['Loop','Loop'],o:null},
+ kv:[['Điện áp','24VDC (15–28V)'],['Điện trở cuối','10kΩ'],['Ngõ vào','Tiếp điểm khô, cài được thường mở hoặc thường đóng'],['Dòng','Giám sát ≤0,5mA, tác động ≤1mA']],
+ warn:'Tên cọc đọc trên đế module.',
+ src:'https://www.tandasystem.com/products/input-module-tx3201.html'},
 /* ---------- Dahua ---------- */
 {id:'dh-1400', b:'dahua', code:'HY-1400', name:'Module giám sát (Input)', type:'in', lv:'B',
  use:'Giám sát tiếp điểm thiết bị.',
@@ -492,7 +536,7 @@ function home(){
   '<div class="card"><h2>Nguyên tắc chung</h2><ul class="dots">'+
   '<li>Tiếp điểm <b>thường mở</b>: điện trở cuối đấu <b>song song</b>, đặt ở thiết bị cuối dây.</li>'+
   '<li>Tiếp điểm <b>thường đóng</b>: điện trở cuối đấu <b>nối tiếp</b> với tiếp điểm, cài module ở chế độ thường đóng.</li>'+
-  '<li>Dùng đúng điện trở của hãng. Mỗi hãng một giá trị: GST 4,7kΩ; Notifier, EST 47kΩ; Hochiki 10kΩ; Bosch 3,9kΩ.</li>'+
+  '<li>Dùng đúng điện trở của hãng. Mỗi hãng một giá trị: GST 4,7kΩ; Notifier, EST 47kΩ; Hochiki, Horing, Tanda 10kΩ; Bosch 3,9kΩ.</li>'+
   '<li>Loop có phân cực hay không tùy hãng. Module cách ly luôn đấu đúng cực vào, ra.</li>'+
   '<li>Tiếp điểm module thường chỉ 1–3A ở 24–30VDC. Tải 220VAC đi qua rơ-le trung gian.</li></ul></div>'+
   '<div class="card"><h2>Bảng tra nhanh điện trở cuối</h2><div class="tw"><table><thead><tr><th>Module</th><th>Hãng</th><th>Điện trở cuối</th></tr></thead><tbody>'+

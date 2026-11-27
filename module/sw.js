@@ -1,6 +1,6 @@
 // Module báo cháy: lưu sẵn ứng dụng trên máy để mở được khi không có mạng.
 // build_pwa.py thay số phiên bản mỗi lần đóng gói, máy anh em tự lấy bản mới khi có mạng.
-const CACHE = 'module-bao-chay-202611271130';
+const CACHE = 'module-bao-chay-202611271210';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 // tải thêm nếu được (phông chữ); thiếu thì app vẫn chạy
 const EXTRA = ['https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap'];

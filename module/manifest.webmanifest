@@ -1,7 +1,7 @@
 {
   "name": "Sơ đồ đấu nối module báo cháy",
   "short_name": "Module báo cháy",
-  "description": "Sơ đồ đấu dây module báo cháy địa chỉ các hãng GST, Notifier, EST, Simplex, Siemens, Bosch, Hochiki, Nittan, Dahua.",
+  "description": "Sơ đồ đấu dây module báo cháy địa chỉ các hãng GST, Notifier, EST, Simplex, Siemens, Bosch, Hochiki, Nittan, Horing, Tanda, Dahua.",
   "lang": "vi",
   "start_url": "./",
   "scope": "./",
